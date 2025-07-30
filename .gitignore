@@ -1,0 +1,8 @@
+ecosystem.config.cjs
+
+.DS_Store
+/node_modules/
+
+# React Router
+/.react-router/
+/build/
