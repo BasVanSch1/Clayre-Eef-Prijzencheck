@@ -60,10 +60,6 @@ export async function action({ request }: Route.ActionArgs) {
       body: JSON.stringify({ username, password: password }),
     });
 
-    // console.log(
-    //   `fetch response status: ${res.status}, statusText: ${res.statusText}`
-    // );
-
     if (!res.ok) {
       return { errorCode: res.status, errorText: res.statusText };
     }

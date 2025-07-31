@@ -7,10 +7,10 @@ const USER_NAME_KEY = "userName";
 const USER_EMAIL_KEY = "userEmail";
 const USER_IMAGE_URL_KEY = "userImageUrl";
 
-export const sessionStorage = createCookieSessionStorage({
+const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: "__session",
-    secrets: ["very-secret-key-for-CE"],
+    // secrets: ["very-secret-key-for-CE"],
     sameSite: "lax",
     path: "/",
     httpOnly: true,
@@ -21,7 +21,7 @@ export const sessionStorage = createCookieSessionStorage({
 
 export const { commitSession, destroySession } = sessionStorage;
 
-const getUserSession = async (request: Request) => {
+export const getUserSession = async (request: Request) => {
   return await sessionStorage.getSession(request.headers.get("Cookie"));
 };
 
@@ -57,7 +57,7 @@ export async function getUserFromSession(
     id: userId,
     username: session.get(USER_USERNAME_KEY),
     name: session.get(USER_NAME_KEY),
-    email: session.get(USER_EMAIL_KEY) || null,
+    email: session.get(USER_EMAIL_KEY),
     imageUrl: session.get(USER_IMAGE_URL_KEY) || null,
   };
 

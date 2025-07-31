@@ -17,7 +17,6 @@ import NavBar from "./components/NavBar";
 import { useEffect, useState } from "react";
 import { getProductCount } from "./services/productService.server";
 import { getUserFromSession } from "./services/session.server";
-import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./services/AuthProvider";
 
 export function classNames(
