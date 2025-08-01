@@ -2,7 +2,8 @@ export type User = {
   id: string;
   username: string;
   password?: string;
-  name?: string;
-  email?: string;
-  imageUrl?: string;
+  name: string;
+  email: string;
+  avatar?: File | null;
+  avatarVersion?: number; // Optional field to refresh avatar when updated
 };

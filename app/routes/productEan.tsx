@@ -6,8 +6,7 @@ import {
 } from "react-router";
 import type { Route } from "./+types/productEan";
 import ProductCard from "~/components/ProductCard";
-
-const apiUrl = process.env.API_URL;
+import { endpoints } from "~/globals";
 
 // Metadata like page title and description
 export function meta({}: Route.MetaArgs) {
@@ -77,7 +76,7 @@ export async function loader({ params }: Route.LoaderArgs) {
     return null;
   }
 
-  const res = await fetch(`${apiUrl}/Products/EAN/${eanCode}`);
+  const res = await fetch(`${endpoints.products.getByEan}/${eanCode}`);
   // console.log(
   //   `Fetching product with EAN code: ${eanCode}; Status: ${res.status}`
   // );

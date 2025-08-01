@@ -17,8 +17,8 @@ import NavBar from "./components/NavBar";
 import { useEffect, useState } from "react";
 import { getProductCount } from "./services/productService.server";
 import { getUserFromSession } from "./services/session.server";
-import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./services/AuthProvider";
+import { fileStorage } from "./services/filestorage.server";
 
 export function classNames(
   ...classes: (string | boolean | undefined | null)[]
@@ -42,6 +42,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   if (!user && url.pathname !== "/login") {
     return redirect("/login");
+  }
+
+  if (user) {
+    user.avatar = await fileStorage.get(`${user.id}-avatar`);
+    user.avatarVersion = Date.now(); // Use current timestamp to force reload avatar
   }
 
   return { productCount, user };

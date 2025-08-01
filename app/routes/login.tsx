@@ -8,8 +8,7 @@ import {
   useNavigation,
 } from "react-router";
 import { classNames } from "~/root";
-
-const apiUrl = process.env.API_URL;
+import { endpoints } from "~/globals";
 
 export const handle = {
   title: "Log in",
@@ -52,17 +51,13 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   try {
-    const res = await fetch(`${apiUrl}/Authentication/login`, {
+    const res = await fetch(`${endpoints.authentication.login}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ username, password: password }),
     });
-
-    // console.log(
-    //   `fetch response status: ${res.status}, statusText: ${res.statusText}`
-    // );
 
     if (!res.ok) {
       return { errorCode: res.status, errorText: res.statusText };
@@ -79,7 +74,6 @@ export async function action({ request }: Route.ActionArgs) {
         username: userData.userName,
         name: userData.displayName,
         email: userData.email,
-        imageUrl: userData.imageUrl || null,
       },
     });
   } catch (error) {

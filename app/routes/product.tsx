@@ -6,8 +6,7 @@ import {
   useNavigation,
   useRouteError,
 } from "react-router";
-
-const apiUrl = process.env.API_URL;
+import { endpoints } from "~/globals";
 
 // Metadata like page title and description
 export function meta({}: Route.MetaArgs) {
@@ -56,7 +55,7 @@ export async function loader({ params }: Route.LoaderArgs) {
     return null;
   }
 
-  const res = await fetch(`${apiUrl}/Products/${productCode}`);
+  const res = await fetch(`${endpoints.products.get}/${productCode}`);
   // console.log(
   //   `Fetching product with code: ${productCode}; Status: ${res.status}`
   // );
