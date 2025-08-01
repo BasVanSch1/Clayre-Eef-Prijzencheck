@@ -113,9 +113,9 @@ const NavBar = () => {
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">Open user menu</span>
 
-                    {user?.imageUrl ? (
+                    {user?.avatar ? (
                       <img
-                        src={user?.imageUrl}
+                        src={`/data/${user.id}-avatar?${Date.now()}`} // added date.now() to force reload the image
                         className="size-8 rounded-full"
                       />
                     ) : (
@@ -192,8 +192,11 @@ const NavBar = () => {
             <div className="border-t border-gray-700 pt-4 pb-3">
               <div className="flex items-center px-5">
                 <div className="shrink-0">
-                  {user?.imageUrl ? (
-                    <img src={user?.imageUrl} className="size-8 rounded-full" />
+                  {user?.avatar ? (
+                    <img
+                      src={`/data/${user.id}-avatar?${Date.now()}`} // added date.now() to force reload the image
+                      className="size-8 rounded-full"
+                    />
                   ) : (
                     <div className="relative size-8 bg-gray-100 flex justify-center items-center rounded-full">
                       <DefaultProfileImage />

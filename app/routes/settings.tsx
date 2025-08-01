@@ -28,12 +28,13 @@ export async function loader({ request }: Route.LoaderArgs) {
   const { getUserSession, commitSession } = await import(
     "~/services/session.server"
   );
+  const { fileStorage } = await import("~/services/filestorage.server");
+
   const session = await getUserSession(request);
   const USER_ID_KEY = "userId";
   const USER_USERNAME_KEY = "userUsername";
   const USER_NAME_KEY = "userName";
   const USER_EMAIL_KEY = "userEmail";
-  const USER_IMAGE_URL_KEY = "userImageUrl";
 
   const userId = session.get(USER_ID_KEY);
 
@@ -54,20 +55,18 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
 
     const data = await res.json();
-
     const user: User = {
       id: data.userId,
       username: data.userName,
       name: data.displayName,
       email: data.email,
-      imageUrl: data.imageUrl || null,
+      avatar: await fileStorage.get(`${data.userId}-avatar`),
     };
 
     session.set(USER_ID_KEY, user.id);
     session.set(USER_USERNAME_KEY, user.username);
     session.set(USER_NAME_KEY, user.name);
     session.set(USER_EMAIL_KEY, user.email);
-    session.set(USER_IMAGE_URL_KEY, user.imageUrl);
 
     return new Response(JSON.stringify({ user }), {
       headers: {
@@ -188,7 +187,11 @@ export default function Settings() {
             </p>
           </div>
           <div className="col-start-2 row-start-1 flex flex-col">
-            <Form method="post" action="?updateUser">
+            <Form
+              method="post"
+              action="?updateUser"
+              encType="multipart/form-data"
+            >
               <div className="flex gap-5">
                 {file && (
                   <img
@@ -197,9 +200,9 @@ export default function Settings() {
                   ></img>
                 )}
 
-                {user.imageUrl ? (
+                {user.avatar ? (
                   <img
-                    src={user.imageUrl}
+                    src={`/data/${user.id}-avatar?${Date.now()}`} // added date.now() to force reload the image
                     className={classNames(
                       file ? "hidden" : "",
                       "size-25 rounded-md border shadow-md"
@@ -225,7 +228,7 @@ export default function Settings() {
                     onChange={handleImageChange}
                   />
                   <p className="text-gray-500 text-sm">
-                    JPG, JPEG or PNG. 1MB max.
+                    JPG, JPEG or PNG. 5MB max.
                   </p>
                 </div>
               </div>

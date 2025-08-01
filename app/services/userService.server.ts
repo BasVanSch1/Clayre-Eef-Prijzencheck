@@ -1,4 +1,5 @@
 import validator from "validator";
+import { fileStorage } from "./filestorage.server";
 
 const API_URL = process.env.API_URL;
 
@@ -9,9 +10,26 @@ export async function updateUserSettings(
   let displayName = formData.get("displayName") as string | null;
   let newEmail = formData.get("newEmail") as string | null;
   const confirmEmail = formData.get("confirmEmail") as string;
-  const newImage = formData.get("profileImage") as File | null;
+  let newImage = formData.get("profileImage") as File | null;
 
-  // TODO: add saving new image logic
+  if (newImage && newImage instanceof File) {
+    if (newImage.size > 5 * 1024 * 1024) {
+      return {
+        code: 400,
+        message: "Image size exceeds 5MB limit.",
+        fields: ["profileImage"],
+      };
+    }
+    if (!["image/jpeg", "image/png"].includes(newImage.type)) {
+      return {
+        code: 400,
+        message: "Invalid image format. Only JPEG and PNG are allowed.",
+        fields: ["profileImage"],
+      };
+    }
+
+    await fileStorage.set(`${userId}-avatar`, newImage);
+  }
 
   if (displayName && (displayName.length <= 0 || displayName.trim() === "")) {
     displayName = null;
@@ -41,11 +59,9 @@ export async function updateUserSettings(
     (newEmail
       ? `{"op": "replace", "path": "/email", "value": "${newEmail}"},`
       : "") +
-    (newImage
-      ? `{"op": "replace", "path": "/profileImage", "value": "${newImage.name}"},`
-      : "") +
     "]";
 
+  console.log("Formatted body for update:", formattedBody);
   try {
     const res = await fetch(`${API_URL}/Authentication/edit/${userId}`, {
       method: "PATCH",
