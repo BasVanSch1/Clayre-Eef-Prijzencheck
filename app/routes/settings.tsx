@@ -10,8 +10,7 @@ import DefaultProfileImage from "~/components/DefaultProfileImage";
 import type { User } from "~/components/Types";
 import { classNames } from "~/root";
 import validator from "validator";
-
-const API_URL = process.env.API_URL;
+import { endpoints } from "~/globals";
 
 export const handle = {
   title: "Settings",
@@ -41,7 +40,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!userId) return null;
 
   try {
-    const res = await fetch(`${API_URL}/Authentication/lookup/${userId}`);
+    const res = await fetch(`${endpoints.user.get}/${userId}`);
 
     if (!res.ok) {
       console.error(

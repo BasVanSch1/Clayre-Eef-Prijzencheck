@@ -5,7 +5,6 @@ const USER_ID_KEY = "userId";
 const USER_USERNAME_KEY = "userUsername";
 const USER_NAME_KEY = "userName";
 const USER_EMAIL_KEY = "userEmail";
-const USER_IMAGE_URL_KEY = "userImageUrl";
 
 const sessionStorage = createCookieSessionStorage({
   cookie: {

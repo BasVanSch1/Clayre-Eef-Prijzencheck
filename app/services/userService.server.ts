@@ -1,8 +1,6 @@
 import validator from "validator";
 import { fileStorage } from "./filestorage.server";
-import { json } from "stream/consumers";
-
-const API_URL = process.env.API_URL;
+import { endpoints } from "~/globals";
 
 export async function updateUserSettings(
   userId: string,
@@ -64,7 +62,7 @@ export async function updateUserSettings(
 
   console.log("Formatted body for update:", formattedBody);
   try {
-    const res = await fetch(`${API_URL}/Authentication/edit/${userId}`, {
+    const res = await fetch(`${endpoints.user.update}/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json-patch+json",
@@ -121,7 +119,7 @@ export async function updateUserPassword(
   }
 
   try {
-    const res = await fetch(`${API_URL}/Authentication/verify/${userId}`, {
+    const res = await fetch(`${endpoints.authentication.verify}/${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -157,7 +155,7 @@ export async function updateUserPassword(
     "]";
 
   try {
-    const res = await fetch(`${API_URL}/Authentication/edit/${userId}`, {
+    const res = await fetch(`${endpoints.user.update}/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json-patch+json",

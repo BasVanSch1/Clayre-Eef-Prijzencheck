@@ -1,4 +1,5 @@
-const apiUrl = process.env.API_URL;
+import { endpoints } from "~/globals";
+
 const CACHE_DURATION = 1 * 60 * 60 * 1000; // 1 hour in milliseconds (hour * min * sec * ms)
 let lastFetchTime = 0;
 let cachedProductCount: number | null = null;
@@ -14,7 +15,7 @@ export async function getProductCount(): Promise<number> {
 
   if (!cachedProductCount || currentTime - lastFetchTime > CACHE_DURATION) {
     try {
-      const res = await fetch(`${apiUrl}/Products/count`);
+      const res = await fetch(`${endpoints.products.count}`);
 
       if (!res.ok) {
         console.error(
@@ -48,7 +49,7 @@ export async function getProducts(): Promise<any[]> {
 
   if (!cachedProducts || currentTime - lastFetchTime > CACHE_DURATION) {
     try {
-      const res = await fetch(`${apiUrl}/Products`);
+      const res = await fetch(`${endpoints.products.get}`);
 
       if (!res.ok) {
         console.error("Failed to fetch products:", res.status, res.statusText);
