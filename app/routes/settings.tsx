@@ -1,8 +1,14 @@
+import { useState } from "react";
 import type { Route } from "./+types/settings";
-import { Form, useLoaderData, useRevalidator } from "react-router";
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useNavigation,
+} from "react-router";
 import DefaultProfileImage from "~/components/DefaultProfileImage";
 import type { User } from "~/components/Types";
-import { commitSession, getUserSession } from "~/services/session.server";
+import { classNames } from "~/root";
 
 const API_URL = process.env.API_URL;
 
@@ -18,6 +24,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const { getUserSession, commitSession } = await import(
+    "~/services/session.server"
+  );
   const session = await getUserSession(request);
   const USER_ID_KEY = "userId";
   const USER_USERNAME_KEY = "userUsername";
@@ -71,9 +80,58 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 }
 
+export async function action({ request }: Route.ActionArgs) {
+  const { getUserSession } = await import("~/services/session.server");
+  const session = await getUserSession(request);
+  const userId = session.get("userId");
+  const formData = await request.formData();
+  const actionType = formData.get("_action");
+
+  if (actionType === "updateUserSettings") {
+    const { updateUserSettings } = await import(
+      "~/services/userService.server"
+    );
+
+    if (formData.get("newEmail") !== formData.get("confirmEmail")) {
+      return {
+        code: 400,
+        message: "New email and confirmation do not match.",
+      };
+    }
+
+    const result = await updateUserSettings(userId, formData);
+
+    return { code: result.code, message: result.message };
+  }
+
+  if (actionType === "updateUserPassword") {
+    // const { updateUserPassword } = await import("~/services/userService.server");
+    // if (formData.get("newPassword") !== formData.get("confirmPassword")) {
+    //   return {
+    //     code: 400,
+    //     message: "New password and confirmation do not match.",
+    //   };
+    // }
+    // const result = await updateUserPassword(userId, formData);
+    // return { code: result.code, message: result.message };
+  }
+
+  return { code: 400, message: "Invalid action." };
+}
+
 export default function Settings() {
   const data = useLoaderData();
   const user: User = data?.user;
+  const [file, setFile] = useState<string | null>();
+
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
+
+  function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const uploadedFile = event.target.files?.[0];
+    if (!uploadedFile) return;
+    setFile(URL.createObjectURL(uploadedFile));
+  }
 
   return (
     <>
@@ -86,16 +144,46 @@ export default function Settings() {
             </p>
           </div>
           <div className="col-start-2 row-start-1 flex flex-col">
-            <Form>
-              <div className="flex gap-2">
+            <Form method="post" action="?updateUser">
+              <div className="flex gap-5">
+                {file && (
+                  <img
+                    src={file}
+                    className="size-25 rounded-md border shadow-md"
+                  ></img>
+                )}
+
                 {user.imageUrl ? (
                   <img
                     src={user.imageUrl}
-                    className="size-25 rounded-md border shadow-md"
+                    className={classNames(
+                      file ? "hidden" : "",
+                      "size-25 rounded-md border shadow-md"
+                    )}
                   ></img>
                 ) : (
                   <DefaultProfileImage />
                 )}
+
+                <div className="flex flex-col justify-center">
+                  <label
+                    htmlFor="profileImage"
+                    className="mt-2 h-10 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
+                  >
+                    Change profile image
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    name="profileImage"
+                    id="profileImage"
+                    className="hidden"
+                    onChange={handleImageChange}
+                  />
+                  <p className="text-gray-500 text-sm">
+                    JPG, JPEG or PNG. 1MB max.
+                  </p>
+                </div>
               </div>
 
               <div className="flex gap-2">
@@ -133,7 +221,7 @@ export default function Settings() {
                   type="text"
                   name="email"
                   defaultValue={user.email}
-                  className="p-2 mb-1 border border-gray-300 rounded-md w-[20vw] bg-white"
+                  className="p-2 mb-1 border border-gray-300 rounded-md w-[20vw] text-gray-700"
                   readOnly
                 />
               </div>
@@ -166,10 +254,17 @@ export default function Settings() {
 
               <button
                 type="submit"
+                disabled={
+                  isSubmitting && navigation.formAction?.includes("updateUser")
+                }
                 className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
               >
-                Save
+                {isSubmitting && navigation.formAction?.includes("updateUser")
+                  ? "Saving..."
+                  : "Save changes"}
               </button>
+
+              <input type="hidden" name="_action" value="updateUserSettings" />
             </Form>
           </div>
 
@@ -182,12 +277,12 @@ export default function Settings() {
             </p>
           </div>
           <div className="col-start-2 row-start-3 flex flex-col">
-            <Form>
+            <Form method="post" action="?updatePassword">
               <label className="block mb-1 text-sm font-medium text-gray-700">
                 Current password
               </label>
               <input
-                type="text"
+                type="password"
                 name="currentPassword"
                 placeholder="Current Password"
                 className="p-2 mb-1 border border-gray-300 rounded-md w-[20vw] bg-white"
@@ -200,7 +295,7 @@ export default function Settings() {
                     New password
                   </label>
                   <input
-                    type="text"
+                    type="password"
                     name="newPassword"
                     placeholder="New password"
                     className="p-2 border border-gray-300 rounded-md w-[20vw] bg-white"
@@ -213,7 +308,7 @@ export default function Settings() {
                     Confirm password
                   </label>
                   <input
-                    type="text"
+                    type="password"
                     name="confirmPassword"
                     placeholder="Confirm password"
                     className="p-2 border border-gray-300 rounded-md w-[20vw] bg-white"
@@ -224,10 +319,19 @@ export default function Settings() {
 
               <button
                 type="submit"
+                disabled={
+                  isSubmitting &&
+                  navigation.formAction?.includes("updatePassword")
+                }
                 className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
               >
-                Change password
+                {isSubmitting &&
+                navigation.formAction?.includes("updatePassword")
+                  ? "Saving..."
+                  : "Change password"}
               </button>
+
+              <input type="hidden" name="_action" value="updateUserPassword" />
             </Form>
           </div>
 

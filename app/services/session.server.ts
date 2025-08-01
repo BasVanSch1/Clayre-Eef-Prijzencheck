@@ -10,7 +10,7 @@ const USER_IMAGE_URL_KEY = "userImageUrl";
 const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: "__session",
-    // secrets: ["very-secret-key-for-CE"],
+    secrets: ["very-secret-key-for-CE", "Another-key-for-CE-hihi"],
     sameSite: "lax",
     path: "/",
     httpOnly: true,
