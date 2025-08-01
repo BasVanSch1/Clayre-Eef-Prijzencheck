@@ -58,7 +58,6 @@ export async function getUserFromSession(
     username: session.get(USER_USERNAME_KEY),
     name: session.get(USER_NAME_KEY),
     email: session.get(USER_EMAIL_KEY),
-    imageUrl: session.get(USER_IMAGE_URL_KEY) || null,
   };
 
   return user;
@@ -80,7 +79,6 @@ export async function createUserSession({
   session.set(USER_USERNAME_KEY, user.username);
   session.set(USER_NAME_KEY, user.name);
   session.set(USER_EMAIL_KEY, user.email);
-  session.set(USER_IMAGE_URL_KEY, user.imageUrl);
   console.log(
     `Created user session for userId: ${user.id}, username: ${
       user.username
