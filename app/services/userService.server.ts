@@ -1,5 +1,6 @@
 import validator from "validator";
 import { fileStorage } from "./filestorage.server";
+import { json } from "stream/consumers";
 
 const API_URL = process.env.API_URL;
 
@@ -78,6 +79,99 @@ export async function updateUserSettings(
     }
 
     return { code: 204, message: "Succesfully updated user settings." }; // No Content
+  } catch (error) {
+    console.error("Error updating user settings:", error);
+    return { code: 500, message: `${error}` }; // Internal Server Error
+  }
+}
+
+export async function updateUserPassword(
+  userId: string,
+  formData: FormData
+): Promise<{ code: number; message?: string; fields?: string[] }> {
+  const currentPassword = formData.get("currentPassword") as string;
+  const newPassword = formData.get("newPassword") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
+
+  if (!currentPassword || currentPassword.trim() === "") {
+    return {
+      code: 400,
+      message: "Current password is required.",
+      fields: ["currentPassword"],
+    };
+  }
+
+  if (newPassword !== confirmPassword) {
+    console.log(
+      `New password: ${newPassword}, Confirm new password: ${confirmPassword}`
+    );
+    return {
+      code: 400,
+      message: "New password and confirmation do not match.",
+      fields: ["newPassword", "confirmNewPassword"],
+    };
+  }
+
+  if (newPassword.length < 4) {
+    return {
+      code: 400,
+      message: "New password must be at least 4 characters long.",
+      fields: ["newPassword"],
+    };
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/Authentication/verify/${userId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        password: currentPassword,
+      }),
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) {
+        return {
+          code: res.status,
+          message: "Current password is incorrect.",
+          fields: ["currentPassword"],
+        };
+      }
+
+      return {
+        code: res.status,
+        message: res.statusText,
+        fields: ["currentPassword"],
+      };
+    }
+  } catch (error) {
+    console.error("Error verifying current password:", error);
+    return { code: 500, message: `${error}` }; // Internal Server Error
+  }
+
+  const formattedBody =
+    "[" +
+    `{"op": "replace", "path": "/passwordHash", "value": "${newPassword}"},` +
+    "]";
+
+  try {
+    const res = await fetch(`${API_URL}/Authentication/edit/${userId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json-patch+json",
+      },
+      body: formattedBody,
+    });
+
+    if (!res.ok) {
+      console.error("Failed to update user settings:", await res.json());
+
+      return { code: res.status, message: res.statusText };
+    }
+
+    return { code: 204, message: "Succesfully updated password." }; // No Content
   } catch (error) {
     console.error("Error updating user settings:", error);
     return { code: 500, message: `${error}` }; // Internal Server Error

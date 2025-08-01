@@ -103,9 +103,18 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   if (actionType === "updateUserPassword") {
-    // const { updateUserPassword } = await import("~/services/userService.server");
-    // const result = await updateUserPassword(userId, formData);
-    // return { code: result.code, message: result.message, action: "updateUserPassword", fields: result.fields };
+    const { updateUserPassword } = await import(
+      "~/services/userService.server"
+    );
+
+    const result = await updateUserPassword(userId, formData);
+
+    return {
+      code: result.code,
+      message: result.message,
+      action: "updateUserPassword",
+      fields: result.fields,
+    };
   }
 
   return { code: 400, message: "Invalid action.", action: actionType };
@@ -387,9 +396,27 @@ export default function Settings() {
                 type="password"
                 name="currentPassword"
                 placeholder="Current Password"
-                className="p-2 mb-1 border border-gray-300 rounded-md w-[20vw] bg-white"
+                className={classNames(
+                  "p-2 border border-gray-300 rounded-md w-[20vw] bg-white",
+                  feedback.find((error) =>
+                    error.fields?.includes("currentPassword")
+                  )
+                    ? "focus:outline-0 border-red-500"
+                    : ""
+                )}
                 required
               />
+              {feedback.find((error) =>
+                error.fields?.includes("currentPassword")
+              ) && (
+                <p className="text-red-600 text-sm">
+                  {
+                    feedback.find((error) =>
+                      error.fields?.includes("currentPassword")
+                    )?.message
+                  }
+                </p>
+              )}
 
               <div className="flex gap-2">
                 <div>
@@ -400,9 +427,27 @@ export default function Settings() {
                     type="password"
                     name="newPassword"
                     placeholder="New password"
-                    className="p-2 border border-gray-300 rounded-md w-[20vw] bg-white"
+                    className={classNames(
+                      "p-2 border border-gray-300 rounded-md w-[20vw] bg-white",
+                      feedback.find((error) =>
+                        error.fields?.includes("newPassword")
+                      )
+                        ? "focus:outline-0 border-red-500"
+                        : ""
+                    )}
                     required
                   />
+                  {feedback.find((error) =>
+                    error.fields?.includes("newPassword")
+                  ) && (
+                    <p className="text-red-600 text-sm">
+                      {
+                        feedback.find((error) =>
+                          error.fields?.includes("newPassword")
+                        )?.message
+                      }
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -413,9 +458,27 @@ export default function Settings() {
                     type="password"
                     name="confirmPassword"
                     placeholder="Confirm password"
-                    className="p-2 border border-gray-300 rounded-md w-[20vw] bg-white"
+                    className={classNames(
+                      "p-2 border border-gray-300 rounded-md w-[20vw] bg-white",
+                      feedback.find((error) =>
+                        error.fields?.includes("confirmNewPassword")
+                      )
+                        ? "focus:outline-0 border-red-500"
+                        : ""
+                    )}
                     required
                   />
+                  {feedback.find((error) =>
+                    error.fields?.includes("confirmNewPassword")
+                  ) && (
+                    <p className="text-red-600 text-sm">
+                      {
+                        feedback.find((error) =>
+                          error.fields?.includes("confirmNewPassword")
+                        )?.message
+                      }
+                    </p>
+                  )}
                 </div>
               </div>
 
