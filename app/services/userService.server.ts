@@ -1,33 +1,43 @@
-import type { User } from "~/components/Types";
+import validator from "validator";
 
 const API_URL = process.env.API_URL;
 
 export async function updateUserSettings(
   userId: string,
   formData: FormData
-): Promise<{ code: number; message?: string }> {
-  const displayName = formData.get("displayName") as string;
-  const newEmail = formData.get("newEmail") as string;
+): Promise<{ code: number; message?: string; fields?: string[] }> {
+  let displayName = formData.get("displayName") as string | null;
+  let newEmail = formData.get("newEmail") as string | null;
   const confirmEmail = formData.get("confirmEmail") as string;
   const newImage = formData.get("profileImage") as File | null;
 
-  if (newEmail && newEmail !== confirmEmail) {
-    return { code: 400, message: "New email and confirmation do not match." };
+  // TODO: add saving new image logic
+
+  if (displayName && (displayName.length <= 0 || displayName.trim() === "")) {
+    displayName = null;
   }
 
-  console.log("Updating user settings:", {
-    displayName,
-    newEmail,
-    confirmEmail: formData.get("confirmEmail"),
-    userId,
-    newImage,
-  });
+  if (newEmail && (newEmail.length <= 0 || newEmail.trim() === "")) {
+    newEmail = null;
+  }
+
+  if (newEmail && newEmail !== confirmEmail) {
+    return {
+      code: 400,
+      message: "New email and confirmation do not match.",
+      fields: ["newEmail", "confirmEmail"],
+    };
+  }
+
+  if (newEmail && !validator.isEmail(newEmail)) {
+    return { code: 400, message: "Invalid email.", fields: ["newEmail"] };
+  }
 
   const formattedBody =
     "[" +
     (displayName
       ? `{"op": "replace", "path": "/displayName", "value": "${displayName}"},`
-      : "") +
+      : `{"op": "replace", "path": "/displayName", "value": null},`) +
     (newEmail
       ? `{"op": "replace", "path": "/email", "value": "${newEmail}"},`
       : "") +

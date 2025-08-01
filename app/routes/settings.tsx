@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Route } from "./+types/settings";
 import {
   Form,
@@ -9,6 +9,7 @@ import {
 import DefaultProfileImage from "~/components/DefaultProfileImage";
 import type { User } from "~/components/Types";
 import { classNames } from "~/root";
+import validator from "validator";
 
 const API_URL = process.env.API_URL;
 
@@ -92,31 +93,23 @@ export async function action({ request }: Route.ActionArgs) {
       "~/services/userService.server"
     );
 
-    if (formData.get("newEmail") !== formData.get("confirmEmail")) {
-      return {
-        code: 400,
-        message: "New email and confirmation do not match.",
-      };
-    }
-
     const result = await updateUserSettings(userId, formData);
 
-    return { code: result.code, message: result.message };
+    return {
+      code: result.code,
+      message: result.message,
+      action: "updateUserSettings",
+      fields: result.fields,
+    };
   }
 
   if (actionType === "updateUserPassword") {
     // const { updateUserPassword } = await import("~/services/userService.server");
-    // if (formData.get("newPassword") !== formData.get("confirmPassword")) {
-    //   return {
-    //     code: 400,
-    //     message: "New password and confirmation do not match.",
-    //   };
-    // }
     // const result = await updateUserPassword(userId, formData);
-    // return { code: result.code, message: result.message };
+    // return { code: result.code, message: result.message, action: "updateUserPassword", fields: result.fields };
   }
 
-  return { code: 400, message: "Invalid action." };
+  return { code: 400, message: "Invalid action.", action: actionType };
 }
 
 export default function Settings() {
@@ -124,14 +117,65 @@ export default function Settings() {
   const user: User = data?.user;
   const [file, setFile] = useState<string | null>();
 
+  const actionData = useActionData<{
+    code: number;
+    message?: string;
+    action?: string;
+    fields?: string[];
+  }>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+
+  const [feedback, setFeedback] = useState<
+    {
+      code?: number;
+      message?: string;
+      action?: string;
+      fields?: string[];
+    }[]
+  >([]);
 
   function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
     const uploadedFile = event.target.files?.[0];
     if (!uploadedFile) return;
     setFile(URL.createObjectURL(uploadedFile));
   }
+
+  const handleValidateEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const target = event.target.name;
+    const email = event.target.value;
+
+    if (email && email.length > 0 && !validator.isEmail(email)) {
+      setFeedback((prev) =>
+        prev.filter((msg) => !msg.fields?.includes(target))
+      ); // Remove previous error for target
+
+      setFeedback((prev) => [
+        ...prev,
+        { fields: [target], message: "Invalid email format." },
+      ]);
+    } else {
+      setFeedback((prev) =>
+        prev.filter((msg) => !msg.fields?.includes(target))
+      ); // Remove error for target if email is valid
+    }
+  };
+
+  useEffect(() => {
+    if (actionData?.code) {
+      setFeedback((prev) => prev.filter((msg) => !msg.fields));
+
+      setFeedback((prev) => [
+        ...prev,
+        {
+          code: actionData.code,
+          message: actionData.message,
+          action: actionData.action,
+          fields: actionData.fields,
+        },
+      ]);
+    }
+  }, [actionData]);
 
   return (
     <>
@@ -235,10 +279,28 @@ export default function Settings() {
                     type="text"
                     name="newEmail"
                     placeholder="New email address"
-                    className="p-2 mb-1 border border-gray-300 rounded-md w-[20vw] bg-white"
+                    onChange={handleValidateEmail}
+                    className={classNames(
+                      "p-2 mb-1 border border-gray-300 rounded-md w-[20vw] bg-white",
+                      feedback.find((error) =>
+                        error.fields?.includes("newEmail")
+                      )
+                        ? "focus:outline-0 border-red-500"
+                        : ""
+                    )}
                   />
+                  {feedback.find((error) =>
+                    error.fields?.includes("newEmail")
+                  ) && (
+                    <p className="text-red-600 text-sm">
+                      {
+                        feedback.find((error) =>
+                          error.fields?.includes("newEmail")
+                        )?.message
+                      }
+                    </p>
+                  )}
                 </div>
-
                 <div>
                   <label className="block mb-1 text-sm font-medium text-gray-700">
                     Confirm email address
@@ -247,22 +309,59 @@ export default function Settings() {
                     type="text"
                     name="confirmEmail"
                     placeholder="Confirm new email address"
-                    className="p-2 mb-1 border border-gray-300 rounded-md w-[20vw] bg-white"
+                    onChange={handleValidateEmail}
+                    className={classNames(
+                      "p-2 mb-1 border border-gray-300 rounded-md w-[20vw] bg-white",
+                      feedback.find((error) =>
+                        error.fields?.includes("confirmEmail")
+                      )
+                        ? "focus:outline-0 border-red-500"
+                        : ""
+                    )}
                   />
+                  {feedback.find((error) =>
+                    error.fields?.includes("confirmEmail")
+                  ) && (
+                    <p className="text-red-600 text-sm">
+                      {
+                        feedback.find((error) =>
+                          error.fields?.includes("confirmEmail")
+                        )?.message
+                      }
+                    </p>
+                  )}
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={
-                  isSubmitting && navigation.formAction?.includes("updateUser")
-                }
-                className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
-              >
-                {isSubmitting && navigation.formAction?.includes("updateUser")
-                  ? "Saving..."
-                  : "Save changes"}
-              </button>
+              <div className="flex">
+                <button
+                  type="submit"
+                  disabled={
+                    isSubmitting &&
+                    navigation.formAction?.includes("updateUser")
+                  }
+                  className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
+                >
+                  {isSubmitting && navigation.formAction?.includes("updateUser")
+                    ? "Saving..."
+                    : "Save changes"}
+                </button>
+
+                {feedback?.find(
+                  (msg) => msg.action === "updateUserSettings" && !msg.fields
+                ) && (
+                  <p
+                    className={classNames(
+                      "ml-2 mt-2 text-sm self-center",
+                      feedback?.find((msg) => msg.code === 204)
+                        ? "text-green-600"
+                        : "text-red-600"
+                    )}
+                  >
+                    {feedback?.find((msg) => !msg.fields)?.message}
+                  </p>
+                )}
+              </div>
 
               <input type="hidden" name="_action" value="updateUserSettings" />
             </Form>
@@ -317,19 +416,36 @@ export default function Settings() {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={
-                  isSubmitting &&
+              <div className="flex">
+                <button
+                  type="submit"
+                  disabled={
+                    isSubmitting &&
+                    navigation.formAction?.includes("updatePassword")
+                  }
+                  className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
+                >
+                  {isSubmitting &&
                   navigation.formAction?.includes("updatePassword")
-                }
-                className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
-              >
-                {isSubmitting &&
-                navigation.formAction?.includes("updatePassword")
-                  ? "Saving..."
-                  : "Change password"}
-              </button>
+                    ? "Saving..."
+                    : "Change password"}
+                </button>
+
+                {feedback?.find(
+                  (msg) => msg.action === "updateUserPassword" && !msg.fields
+                ) && (
+                  <p
+                    className={classNames(
+                      "ml-2 mt-2 text-sm self-center",
+                      feedback?.find((msg) => msg.code === 204)
+                        ? "text-green-600"
+                        : "text-red-600"
+                    )}
+                  >
+                    {feedback?.find((msg) => !msg.fields)?.message}
+                  </p>
+                )}
+              </div>
 
               <input type="hidden" name="_action" value="updateUserPassword" />
             </Form>
