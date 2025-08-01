@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Route } from "./+types/settings";
 import {
   Form,
+  redirect,
   useActionData,
   useLoaderData,
   useNavigation,
@@ -11,6 +12,11 @@ import type { User } from "~/components/Types";
 import { classNames } from "~/root";
 import validator from "validator";
 import { endpoints } from "~/globals";
+
+const USER_ID_KEY = "userId";
+const USER_USERNAME_KEY = "userUsername";
+const USER_NAME_KEY = "userName";
+const USER_EMAIL_KEY = "userEmail";
 
 export const handle = {
   title: "Settings",
@@ -30,14 +36,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   const { fileStorage } = await import("~/services/filestorage.server");
 
   const session = await getUserSession(request);
-  const USER_ID_KEY = "userId";
-  const USER_USERNAME_KEY = "userUsername";
-  const USER_NAME_KEY = "userName";
-  const USER_EMAIL_KEY = "userEmail";
-
   const userId = session.get(USER_ID_KEY);
 
-  if (!userId) return null;
+  if (!userId) return redirect("/");
 
   try {
     const res = await fetch(`${endpoints.user.get}/${userId}`);
@@ -50,7 +51,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         res.statusText
       );
 
-      return null;
+      return redirect("/");
     }
 
     const data = await res.json();
@@ -60,6 +61,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       name: data.displayName,
       email: data.email,
       avatar: await fileStorage.get(`${data.userId}-avatar`),
+      avatarVersion: Date.now(), // Use current timestamp to force reload avatar
     };
 
     session.set(USER_ID_KEY, user.id);
@@ -75,21 +77,37 @@ export async function loader({ request }: Route.LoaderArgs) {
     });
   } catch (error) {
     console.error("Failed to refresh user data:", error);
-    return null;
+    return redirect("/");
   }
 }
 
 export async function action({ request }: Route.ActionArgs) {
   const { getUserSession } = await import("~/services/session.server");
   const session = await getUserSession(request);
-  const userId = session.get("userId");
+  const userId = session.get(USER_ID_KEY);
+  const userDisplayName = session.get(USER_NAME_KEY);
+  const userEmail = session.get(USER_EMAIL_KEY);
   const formData = await request.formData();
   const actionType = formData.get("_action");
+  const image = formData.get("profileImage") as File | null;
 
   if (actionType === "updateUserSettings") {
     const { updateUserSettings } = await import(
       "~/services/userService.server"
     );
+
+    if (
+      userDisplayName === formData.get("displayName") &&
+      (userEmail === formData.get("newEmail") ||
+        formData.get("newEmail") === "") &&
+      (image === null || image.size === 0)
+    ) {
+      return {
+        code: 400,
+        message: "No changes detected.",
+        action: "updateUserSettings",
+      };
+    }
 
     const result = await updateUserSettings(userId, formData);
 
@@ -210,7 +228,8 @@ export default function Settings() {
 
                 {user.avatar ? (
                   <img
-                    src={`/data/${user.id}-avatar?${Date.now()}`} // added date.now() to force reload the image
+                    src={`/data/${user.id}-avatar?v=${user.avatarVersion ?? 0}`}
+                    alt="Profile"
                     className={classNames(
                       file ? "hidden" : "",
                       "size-25 rounded-md border shadow-md"

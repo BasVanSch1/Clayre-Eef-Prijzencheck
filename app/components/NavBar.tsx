@@ -115,7 +115,9 @@ const NavBar = () => {
 
                     {user?.avatar ? (
                       <img
-                        src={`/data/${user.id}-avatar?${Date.now()}`} // added date.now() to force reload the image
+                        src={`/data/${user.id}-avatar?=${
+                          user.avatarVersion ?? 0
+                        }`}
                         className="size-8 rounded-full"
                       />
                     ) : (
@@ -194,7 +196,9 @@ const NavBar = () => {
                 <div className="shrink-0">
                   {user?.avatar ? (
                     <img
-                      src={`/data/${user.id}-avatar?${Date.now()}`} // added date.now() to force reload the image
+                      src={`/data/${user.id}-avatar?v=${
+                        user.avatarVersion ?? 0
+                      }`}
                       className="size-8 rounded-full"
                     />
                   ) : (

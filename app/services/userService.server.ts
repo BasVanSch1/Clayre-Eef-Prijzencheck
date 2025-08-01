@@ -11,7 +11,7 @@ export async function updateUserSettings(
   const confirmEmail = formData.get("confirmEmail") as string;
   let newImage = formData.get("profileImage") as File | null;
 
-  if (newImage && newImage instanceof File) {
+  if (newImage && newImage instanceof File && newImage.size > 0) {
     if (newImage.size > 5 * 1024 * 1024) {
       return {
         code: 400,
@@ -60,7 +60,6 @@ export async function updateUserSettings(
       : "") +
     "]";
 
-  console.log("Formatted body for update:", formattedBody);
   try {
     const res = await fetch(`${endpoints.user.update}/${userId}`, {
       method: "PATCH",

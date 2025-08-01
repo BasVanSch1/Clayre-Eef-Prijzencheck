@@ -46,6 +46,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   if (user) {
     user.avatar = await fileStorage.get(`${user.id}-avatar`);
+    user.avatarVersion = Date.now(); // Use current timestamp to force reload avatar
   }
 
   return { productCount, user };

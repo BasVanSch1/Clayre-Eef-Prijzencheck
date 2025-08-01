@@ -5,4 +5,5 @@ export type User = {
   name: string;
   email: string;
   avatar?: File | null;
+  avatarVersion?: number; // Optional field to refresh avatar when updated
 };
