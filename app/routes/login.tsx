@@ -176,7 +176,9 @@ export default function Login() {
           <input
             type="hidden"
             name="redirectTo"
-            value={location.state?.redirect || "/"}
+            value={
+              new URLSearchParams(location.search).get("redirectTo") || "/"
+            }
           />
         </Form>
       </div>
