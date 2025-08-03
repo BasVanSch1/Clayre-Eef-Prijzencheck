@@ -1,5 +1,3 @@
-import type { get } from "http"
-
 export const endpoints = {
     user: {
         get: (process.env.API_URL ?? '') + (process.env.USER_ENDPOINT ?? ''),
