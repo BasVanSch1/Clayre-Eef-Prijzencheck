@@ -9,17 +9,6 @@ export const handle = {
 };
 
 export async function loader({ request }: Route.LoaderArgs) {
-  // const productsPromise = fetch("http://localhost:5012/api/products").then(
-  //   (res) => {
-  //     if (!res.ok) {
-  //       throw new Response("Failed to fetch products", { status: res.status });
-  //     }
-  //     return res.json();
-  //   }
-  // );
-
-  // return { products: productsPromise };
-
   return { products: getProducts() };
 }
 
