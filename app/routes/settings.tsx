@@ -8,15 +8,10 @@ import {
   useNavigation,
 } from "react-router";
 import DefaultProfileImage from "~/components/DefaultProfileImage";
-import type { User } from "~/components/Types";
+import type { User, UserRole } from "~/components/Types";
 import { classNames } from "~/root";
 import validator from "validator";
-import { endpoints } from "~/globals";
-
-const USER_ID_KEY = "userId";
-const USER_USERNAME_KEY = "userUsername";
-const USER_NAME_KEY = "userName";
-const USER_EMAIL_KEY = "userEmail";
+import { endpoints, keys } from "~/globals";
 
 export const handle = {
   title: "Settings",
@@ -36,7 +31,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const { fileStorage } = await import("~/services/filestorage.server");
 
   const session = await getUserSession(request);
-  const userId = session.get(USER_ID_KEY);
+  const userId = session.get(keys.session.user.id);
 
   if (!userId) return redirect("/");
 
@@ -62,12 +57,18 @@ export async function loader({ request }: Route.LoaderArgs) {
       email: data.email,
       avatar: await fileStorage.get(`${data.userId}-avatar`),
       avatarVersion: Date.now(), // Use current timestamp to force reload avatar
+      roles: data.roles.map((role: UserRole) => ({
+        id: role.id,
+        name: role.name,
+        description: role.description,
+      })),
     };
 
-    session.set(USER_ID_KEY, user.id);
-    session.set(USER_USERNAME_KEY, user.username);
-    session.set(USER_NAME_KEY, user.name);
-    session.set(USER_EMAIL_KEY, user.email);
+    session.set(keys.session.user.id, user.id);
+    session.set(keys.session.user.username, user.username);
+    session.set(keys.session.user.name, user.name);
+    session.set(keys.session.user.email, user.email);
+    session.set(keys.session.user.roles, user.roles);
 
     return new Response(JSON.stringify({ user }), {
       headers: {
@@ -84,9 +85,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const { getUserSession } = await import("~/services/session.server");
   const session = await getUserSession(request);
-  const userId = session.get(USER_ID_KEY);
-  const userDisplayName = session.get(USER_NAME_KEY);
-  const userEmail = session.get(USER_EMAIL_KEY);
+  const userId = session.get(keys.session.user.id);
+  const userDisplayName = session.get(keys.session.user.name);
+  const userEmail = session.get(keys.session.user.email);
   const formData = await request.formData();
   const actionType = formData.get("_action");
   const image = formData.get("profileImage") as File | null;
@@ -575,12 +576,25 @@ export default function Settings() {
                   Roles
                 </label>
                 <div className="flex gap-2">
-                  <p className="border border-gray-400 rounded-md shadow-md bg-gray-300 text-black text-sm p-1">
-                    User
-                  </p>
-                  <p className="border border-blue-400 rounded-md shadow-md bg-blue-300 text-black text-sm p-1">
-                    Admin
-                  </p>
+                  {user.roles?.length ? (
+                    user.roles.map(
+                      (role) => (
+                        console.log("Role:", role),
+                        (
+                          <p
+                            key={role.id}
+                            className="border border-gray-400 rounded-md shadow-md bg-gray-300 text-black text-sm p-1"
+                          >
+                            {role.name}
+                          </p>
+                        )
+                      )
+                    )
+                  ) : (
+                    <p className="text-gray-500 text-sm dark:text-neutral-300">
+                      No roles assigned
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

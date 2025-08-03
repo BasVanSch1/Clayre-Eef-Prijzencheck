@@ -9,6 +9,7 @@ import {
 } from "react-router";
 import { classNames } from "~/root";
 import { endpoints } from "~/globals";
+import type { UserRole } from "~/components/Types";
 
 export const handle = {
   title: "Log in",
@@ -74,6 +75,13 @@ export async function action({ request }: Route.ActionArgs) {
         username: userData.userName,
         name: userData.displayName,
         email: userData.email,
+        roles: (userData.roles.length > 0
+          ? userData.roles.map((role: UserRole) => ({
+              id: role.id,
+              name: role.name,
+              description: role.description,
+            }))
+          : []) as UserRole[],
       },
     });
   } catch (error) {
