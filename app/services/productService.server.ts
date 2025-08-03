@@ -49,7 +49,7 @@ export async function getProducts(): Promise<any[]> {
 
   if (!cachedProducts || currentTime - lastFetchTime > CACHE_DURATION) {
     try {
-      const res = await fetch(`${endpoints.products.get}`);
+      const res = await fetch(`${endpoints.products.getAll}`);
 
       if (!res.ok) {
         console.error("Failed to fetch products:", res.status, res.statusText);

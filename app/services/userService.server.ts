@@ -1,6 +1,7 @@
 import validator from "validator";
 import { fileStorage } from "./filestorage.server";
 import { endpoints } from "~/globals";
+import type { RolePermission } from "~/components/Types";
 
 export async function updateUserSettings(
   userId: string,
@@ -61,13 +62,16 @@ export async function updateUserSettings(
     "]";
 
   try {
-    const res = await fetch(`${endpoints.user.update}/${userId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json-patch+json",
-      },
-      body: formattedBody,
-    });
+    const res = await fetch(
+      `${endpoints.user.update}`.replace("{id}", userId),
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json-patch+json",
+        },
+        body: formattedBody,
+      }
+    );
 
     if (!res.ok) {
       console.error("Failed to update user settings:", await res.json());
@@ -118,15 +122,18 @@ export async function updateUserPassword(
   }
 
   try {
-    const res = await fetch(`${endpoints.authentication.verify}/${userId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        password: currentPassword,
-      }),
-    });
+    const res = await fetch(
+      `${endpoints.authentication.verify}`.replace("{id}", userId),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          password: currentPassword,
+        }),
+      }
+    );
 
     if (!res.ok) {
       if (res.status === 401) {
@@ -154,13 +161,16 @@ export async function updateUserPassword(
     "]";
 
   try {
-    const res = await fetch(`${endpoints.user.update}/${userId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json-patch+json",
-      },
-      body: formattedBody,
-    });
+    const res = await fetch(
+      `${endpoints.user.update}`.replace("{id}", userId),
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json-patch+json",
+        },
+        body: formattedBody,
+      }
+    );
 
     if (!res.ok) {
       console.error("Failed to update user settings:", await res.json());
@@ -172,5 +182,38 @@ export async function updateUserPassword(
   } catch (error) {
     console.error("Error updating user settings:", error);
     return { code: 500, message: `${error}` }; // Internal Server Error
+  }
+}
+
+export async function getPermissions(
+  userId: string
+): Promise<RolePermission[]> {
+  try {
+    const res = await fetch(
+      `${endpoints.user.getPermissions.replace("{id}", userId)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Failed to fetch user permissions:", await res.json());
+      return [];
+    }
+
+    const data = await res.json();
+    const permissions: RolePermission[] = data.map((permission: any) => ({
+      id: permission.id,
+      name: permission.name,
+      description: permission.description || permission.name,
+    }));
+
+    return permissions || [];
+  } catch (error) {
+    console.error("Error fetching user permissions:", error);
+    return [];
   }
 }

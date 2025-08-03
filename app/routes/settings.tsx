@@ -41,7 +41,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!userId) return redirect("/");
 
   try {
-    const res = await fetch(`${endpoints.user.get}/${userId}`);
+    const res = await fetch(`${endpoints.user.get}`.replace("{id}", userId));
 
     if (!res.ok) {
       console.error(

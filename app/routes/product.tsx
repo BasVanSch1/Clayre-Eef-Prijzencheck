@@ -55,7 +55,9 @@ export async function loader({ params }: Route.LoaderArgs) {
     return null;
   }
 
-  const res = await fetch(`${endpoints.products.get}/${productCode}`);
+  const res = await fetch(
+    `${endpoints.products.get}`.replace("{id}", productCode)
+  );
   // console.log(
   //   `Fetching product with code: ${productCode}; Status: ${res.status}`
   // );
