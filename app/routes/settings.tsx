@@ -187,6 +187,8 @@ export default function Settings() {
   };
 
   useEffect(() => {
+    setFeedback([]); // Clear old feedback
+
     if (actionData?.code) {
       setFeedback((prev) => prev.filter((msg) => !msg.fields));
 
@@ -205,10 +207,12 @@ export default function Settings() {
   return (
     <>
       <div className="col-start-3 row-start-3 flex flex-col mt-5 w-[80vw]">
-        <div className="grid grid-cols-[20vw_auto] gap-x-1 grid-rows-[2fr_auto_1fr_auto_1fr] gap-y-2">
+        <div className="grid grid-cols-[20vw_auto] gap-x-2 grid-rows-[2fr_auto_1fr_auto_1fr] gap-y-2">
           <div className="col-start-1 row-start-1">
-            <h1 className="mt-2 text-xl font-semibold ">User settings</h1>
-            <p className="text-gray-700">
+            <h1 className="mt-2 md:text-xl font-semibold text-black dark:text-neutral-300">
+              User settings
+            </h1>
+            <p className="text-gray-700 dark:text-neutral-400 text-sm md:text-base">
               Manage your account settings and preferences.
             </p>
           </div>
@@ -244,7 +248,7 @@ export default function Settings() {
                 <div className="flex flex-col justify-center">
                   <label
                     htmlFor="profileImage"
-                    className="mt-2 h-10 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
+                    className="mt-2 h-10 cursor-pointer rounded-md text-xs text-center p-1 md:p-2 md:text-base bg-[#007bff] hover:bg-[#0066ff] text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
                   >
                     Change profile image
                   </label>
@@ -256,55 +260,55 @@ export default function Settings() {
                     className="hidden"
                     onChange={handleImageChange}
                   />
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-gray-500 text-xs md:text-sm text-center dark:text-neutral-400">
                     JPG, JPEG or PNG. 5MB max.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className={"flex md:gap-2 flex-col md:flex-row"}>
                 <div>
-                  <label className="block mb-1 text-sm font-medium text-gray-700">
+                  <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Username
                   </label>
                   <input
                     type="text"
                     name="username"
                     defaultValue={user.username}
-                    className="p-2 mb-1 border border-gray-300 rounded-md w-[20vw] text-gray-700"
+                    className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base text-gray-700 transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
                     readOnly
                   />
                 </div>
 
                 <div>
-                  <label className="block mb-1 text-sm font-medium text-gray-700">
+                  <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Display name
                   </label>
                   <input
                     type="text"
                     name="displayName"
                     defaultValue={user.name}
-                    className="p-2 mb-1 border border-gray-300 rounded-md w-[20vw] bg-white"
+                    className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700">
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                   Email address
                 </label>
                 <input
                   type="text"
                   name="email"
                   defaultValue={user.email}
-                  className="p-2 mb-1 border border-gray-300 rounded-md w-[20vw] text-gray-700"
+                  className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base text-gray-700 transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
                   readOnly
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex md:gap-2 flex-col md:flex-row">
                 <div>
-                  <label className="block mb-1 text-sm font-medium text-gray-700">
+                  <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     New email address
                   </label>
                   <input
@@ -313,7 +317,7 @@ export default function Settings() {
                     placeholder="New email address"
                     onChange={handleValidateEmail}
                     className={classNames(
-                      "p-2 mb-1 border border-gray-300 rounded-md w-[20vw] bg-white",
+                      "p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
                       feedback.find((error) =>
                         error.fields?.includes("newEmail")
                       )
@@ -324,7 +328,7 @@ export default function Settings() {
                   {feedback.find((error) =>
                     error.fields?.includes("newEmail")
                   ) && (
-                    <p className="text-red-600 text-sm">
+                    <p className="text-red-600 text-xs md:text-sm">
                       {
                         feedback.find((error) =>
                           error.fields?.includes("newEmail")
@@ -334,16 +338,16 @@ export default function Settings() {
                   )}
                 </div>
                 <div>
-                  <label className="block mb-1 text-sm font-medium text-gray-700">
+                  <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Confirm email address
                   </label>
                   <input
                     type="text"
                     name="confirmEmail"
-                    placeholder="Confirm new email address"
+                    placeholder="Confirm email address"
                     onChange={handleValidateEmail}
                     className={classNames(
-                      "p-2 mb-1 border border-gray-300 rounded-md w-[20vw] bg-white",
+                      "p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 transition-colors duration-200 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
                       feedback.find((error) =>
                         error.fields?.includes("confirmEmail")
                       )
@@ -354,7 +358,7 @@ export default function Settings() {
                   {feedback.find((error) =>
                     error.fields?.includes("confirmEmail")
                   ) && (
-                    <p className="text-red-600 text-sm">
+                    <p className="text-red-600 text-xs md:text-sm">
                       {
                         feedback.find((error) =>
                           error.fields?.includes("confirmEmail")
@@ -365,14 +369,14 @@ export default function Settings() {
                 </div>
               </div>
 
-              <div className="flex">
+              <div className="flex flex-col md:flex-row">
                 <button
                   type="submit"
                   disabled={
                     isSubmitting &&
                     navigation.formAction?.includes("updateUser")
                   }
-                  className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
+                  className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-sm md:text-base text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
                 >
                   {isSubmitting && navigation.formAction?.includes("updateUser")
                     ? "Saving..."
@@ -384,7 +388,7 @@ export default function Settings() {
                 ) && (
                   <p
                     className={classNames(
-                      "ml-2 mt-2 text-sm self-center",
+                      "ml-2 mt-2 text-xs md:text-sm self-center",
                       feedback?.find((msg) => msg.code === 204)
                         ? "text-green-600"
                         : "text-red-600"
@@ -402,14 +406,16 @@ export default function Settings() {
           <hr className="col-span-full row-start-2 my-2 h-px border-0 bg-gray-400/40" />
 
           <div className="col-start-1 row-start-3">
-            <h1 className="text-xl font-semibold ">Change password</h1>
-            <p className="text-gray-700">
+            <h1 className="md:text-xl font-semibold dark:text-neutral-300">
+              Change password
+            </h1>
+            <p className="text-sm md:text-base text-gray-700 dark:text-neutral-400">
               Update your password associated with your account.
             </p>
           </div>
           <div className="col-start-2 row-start-3 flex flex-col">
             <Form method="post" action="?updatePassword">
-              <label className="block mb-1 text-sm font-medium text-gray-700">
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                 Current password
               </label>
               <input
@@ -417,7 +423,7 @@ export default function Settings() {
                 name="currentPassword"
                 placeholder="Current Password"
                 className={classNames(
-                  "p-2 border border-gray-300 rounded-md w-[20vw] bg-white",
+                  "p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
                   feedback.find((error) =>
                     error.fields?.includes("currentPassword")
                   )
@@ -429,7 +435,7 @@ export default function Settings() {
               {feedback.find((error) =>
                 error.fields?.includes("currentPassword")
               ) && (
-                <p className="text-red-600 text-sm">
+                <p className="text-red-600 text-xs md:text-sm">
                   {
                     feedback.find((error) =>
                       error.fields?.includes("currentPassword")
@@ -438,9 +444,9 @@ export default function Settings() {
                 </p>
               )}
 
-              <div className="flex gap-2">
+              <div className="flex flex-col md:gap-2 md:flex-row">
                 <div>
-                  <label className="block mb-1 text-sm font-medium text-gray-700">
+                  <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     New password
                   </label>
                   <input
@@ -448,7 +454,7 @@ export default function Settings() {
                     name="newPassword"
                     placeholder="New password"
                     className={classNames(
-                      "p-2 border border-gray-300 rounded-md w-[20vw] bg-white",
+                      "p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
                       feedback.find((error) =>
                         error.fields?.includes("newPassword")
                       )
@@ -460,7 +466,7 @@ export default function Settings() {
                   {feedback.find((error) =>
                     error.fields?.includes("newPassword")
                   ) && (
-                    <p className="text-red-600 text-sm">
+                    <p className="text-red-600 text-xs md:text-sm">
                       {
                         feedback.find((error) =>
                           error.fields?.includes("newPassword")
@@ -471,7 +477,7 @@ export default function Settings() {
                 </div>
 
                 <div>
-                  <label className="block mb-1 text-sm font-medium text-gray-700">
+                  <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Confirm password
                   </label>
                   <input
@@ -479,7 +485,7 @@ export default function Settings() {
                     name="confirmPassword"
                     placeholder="Confirm password"
                     className={classNames(
-                      "p-2 border border-gray-300 rounded-md w-[20vw] bg-white",
+                      "p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
                       feedback.find((error) =>
                         error.fields?.includes("confirmNewPassword")
                       )
@@ -502,14 +508,14 @@ export default function Settings() {
                 </div>
               </div>
 
-              <div className="flex">
+              <div className="flex flex-col md:flex-row">
                 <button
                   type="submit"
                   disabled={
                     isSubmitting &&
                     navigation.formAction?.includes("updatePassword")
                   }
-                  className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
+                  className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-sm md:text-base text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
                 >
                   {isSubmitting &&
                   navigation.formAction?.includes("updatePassword")
@@ -522,7 +528,7 @@ export default function Settings() {
                 ) && (
                   <p
                     className={classNames(
-                      "ml-2 mt-2 text-sm self-center",
+                      "ml-2 mt-2 text-xs md:text-sm self-center",
                       feedback?.find((msg) => msg.code === 204)
                         ? "text-green-600"
                         : "text-red-600"
@@ -541,23 +547,43 @@ export default function Settings() {
 
           <div className="col-start-1 row-start-5">
             <div>
-              <h1 className="text-xl font-semibold">Additional details</h1>
-              <p className="text-gray-700">
+              <h1 className="md:text-xl font-semibold dark:text-neutral-300">
+                Additional details
+              </h1>
+              <p className="text-sm md:text-base text-gray-700 dark:text-neutral-400">
                 Additional (readonly) information about your account.
               </p>
             </div>
           </div>
           <div className="col-start-2 row-start-5 flex flex-col">
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              User ID
-            </label>
-            <input
-              type="text"
-              name="userId"
-              defaultValue={user.id}
-              className="p-2 border border-gray-300 rounded-md w-[20vw] text-gray-700"
-              readOnly
-            />
+            <div className="flex flex-col md:flex-row md:gap-4">
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
+                  User ID
+                </label>
+                <input
+                  type="text"
+                  name="userId"
+                  defaultValue={user.id}
+                  className="p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                  readOnly
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
+                  Roles
+                </label>
+                <div className="flex gap-2">
+                  <p className="border border-gray-400 rounded-md shadow-md bg-gray-300 text-black text-sm p-1">
+                    User
+                  </p>
+                  <p className="border border-blue-400 rounded-md shadow-md bg-blue-300 text-black text-sm p-1">
+                    Admin
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
