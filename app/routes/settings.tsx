@@ -236,7 +236,9 @@ export default function Settings() {
                     )}
                   ></img>
                 ) : (
-                  <DefaultProfileImage />
+                  <div className={classNames(file ? "hidden" : "")}>
+                    <DefaultProfileImage />
+                  </div>
                 )}
 
                 <div className="flex flex-col justify-center">
