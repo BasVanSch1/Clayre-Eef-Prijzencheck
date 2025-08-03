@@ -577,19 +577,14 @@ export default function Settings() {
                 </label>
                 <div className="flex gap-2">
                   {user.roles?.length ? (
-                    user.roles.map(
-                      (role) => (
-                        console.log("Role:", role),
-                        (
-                          <p
-                            key={role.id}
-                            className="border border-gray-400 rounded-md shadow-md bg-gray-300 text-black text-sm p-1"
-                          >
-                            {role.name}
-                          </p>
-                        )
-                      )
-                    )
+                    user.roles.map((role) => (
+                      <p
+                        key={role.id}
+                        className="border border-blue-400 rounded-md shadow-md bg-blue-300 text-black text-sm p-1"
+                      >
+                        {role.name}
+                      </p>
+                    ))
                   ) : (
                     <p className="text-gray-500 text-sm dark:text-neutral-300">
                       No roles assigned
