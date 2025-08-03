@@ -1,10 +1,6 @@
 import { createCookieSessionStorage, redirect } from "react-router";
 import type { User } from "~/components/Types";
-
-const USER_ID_KEY = "userId";
-const USER_USERNAME_KEY = "userUsername";
-const USER_NAME_KEY = "userName";
-const USER_EMAIL_KEY = "userEmail";
+import { keys } from "~/globals";
 
 const sessionStorage = createCookieSessionStorage({
   cookie: {
@@ -28,8 +24,8 @@ export async function logout(request: Request) {
   const session = await getUserSession(request);
   console.log(
     `Destroying session for userId: ${session.get(
-      USER_ID_KEY
-    )}, username: ${session.get(USER_USERNAME_KEY)}`
+      keys.session.user.id
+    )}, username: ${session.get(keys.session.user.username)}`
   );
 
   return redirect("/login", {
@@ -41,7 +37,7 @@ export async function logout(request: Request) {
 
 export async function getUserId(request: Request): Promise<string | undefined> {
   const session = await getUserSession(request);
-  const userId = session.get(USER_ID_KEY);
+  const userId = session.get(keys.session.user.id);
   return userId;
 }
 
@@ -49,14 +45,15 @@ export async function getUserFromSession(
   request: Request
 ): Promise<User | null> {
   const session = await getUserSession(request);
-  const userId = session.get(USER_ID_KEY);
+  const userId = session.get(keys.session.user.id);
   if (!userId) return null;
 
   const user: User = {
     id: userId,
-    username: session.get(USER_USERNAME_KEY),
-    name: session.get(USER_NAME_KEY),
-    email: session.get(USER_EMAIL_KEY),
+    username: session.get(keys.session.user.username),
+    name: session.get(keys.session.user.name),
+    email: session.get(keys.session.user.email),
+    roles: session.get(keys.session.user.roles),
   };
 
   return user;
@@ -74,10 +71,12 @@ export async function createUserSession({
   user: User;
 }) {
   const session = await getUserSession(request);
-  session.set(USER_ID_KEY, user.id);
-  session.set(USER_USERNAME_KEY, user.username);
-  session.set(USER_NAME_KEY, user.name);
-  session.set(USER_EMAIL_KEY, user.email);
+  session.set(keys.session.user.id, user.id);
+  session.set(keys.session.user.username, user.username);
+  session.set(keys.session.user.name, user.name);
+  session.set(keys.session.user.email, user.email);
+  session.set(keys.session.user.roles, user.roles);
+
   console.log(
     `Created user session for userId: ${user.id}, username: ${
       user.username
