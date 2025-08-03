@@ -32,3 +32,15 @@ export const endpoints = {
         delete: (process.env.API_URL ?? '') + (process.env.DELETE_PERMISSION_ENDPOINT ?? ''),
     },
 }
+
+export const keys = {
+    session: {
+        user: {
+            id: "userId",
+            username: "userUsername",
+            name: "userName",
+            email: "userEmail",
+            roles: "userRoles",
+        }
+    }
+}
