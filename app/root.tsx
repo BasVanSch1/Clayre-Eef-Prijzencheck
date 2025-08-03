@@ -16,7 +16,6 @@ import "./styles/root.css";
 import NavBar from "./components/NavBar";
 import { useEffect, useState } from "react";
 import { getProductCount } from "./services/productService.server";
-import { getUserFromSession } from "./services/session.server";
 import { AuthProvider } from "./services/AuthProvider";
 import { fileStorage } from "./services/filestorage.server";
 import { requireAuth } from "./services/auth.server";

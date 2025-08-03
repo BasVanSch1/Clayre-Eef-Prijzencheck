@@ -8,10 +8,12 @@ export async function requireAuth(request: Request, redirectTo?: string) {
 
   if (!user) {
     const url = new URL(request.url);
-    const searchParams = new URLSearchParams(url.search);
-    searchParams.set("redirectTo", url.pathname + url.search);
+    const searchParams = new URLSearchParams();
+    searchParams.set("redirectTo", redirectTo || url.pathname);
 
-    throw redirect(`/login?${searchParams}`);
+    if (url.pathname !== "/login") {
+      throw redirect(`/login?${searchParams}`);
+    }
   }
 
   return user;
@@ -23,6 +25,11 @@ export async function requirePermission(
   redirectTo?: string
 ) {
   const user = await requireAuth(request);
+
+  if (!user) {
+    throw redirect(redirectTo || "/login");
+  }
+
   const permissions: RolePermission[] = await getPermissions(user.id);
 
   if (
@@ -40,6 +47,11 @@ export async function requirePermissions(
   redirectTo?: string
 ) {
   const user = await requireAuth(request);
+
+  if (!user) {
+    throw redirect(redirectTo || "/login");
+  }
+
   const permissions: RolePermission[] = await getPermissions(user.id);
 
   if (

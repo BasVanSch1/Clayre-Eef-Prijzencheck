@@ -13,7 +13,10 @@ let cachedProducts: any[] | null = null;
 export async function getProductCount(): Promise<number> {
   const currentTime = Date.now();
 
-  if (!cachedProductCount || currentTime - lastFetchTime > CACHE_DURATION) {
+  if (
+    cachedProductCount === null ||
+    currentTime - lastFetchTime > CACHE_DURATION
+  ) {
     try {
       const res = await fetch(`${endpoints.products.count}`);
 
