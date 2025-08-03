@@ -10,9 +10,9 @@ const ProductsTable = ({ data }: ProductsTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const thClassNames =
-    "px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500";
+    "px-1.5 md:px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500";
   const tdClassNames =
-    "px-6 py-2 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200";
+    "px-1.5 md:px-6 py-2 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200";
 
   const filteredData = data?.filter((product) => {
     const productCode = product.productCode.toLowerCase();
@@ -65,7 +65,7 @@ const ProductsTable = ({ data }: ProductsTableProps) => {
         />
       </div>
 
-      <table className="w-[60vw]">
+      <table className="md:w-[60vw]">
         <thead>
           <tr>
             <th scope="col" className={thClassNames}>
