@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { classNames } from "~/root";
 import { useLoaderData } from "react-router";
 import type { User } from "./Types";
-import DefaultProfileImage from "./DefaultProfileImage";
+import { DefaultProfileImage } from "./Icons";
 
 const NavBar = () => {
   const [theme, setTheme] = useState("light");

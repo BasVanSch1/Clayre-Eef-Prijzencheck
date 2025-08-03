@@ -205,13 +205,17 @@ export async function getPermissions(
     }
 
     const data = await res.json();
-    const permissions: RolePermission[] = data.map((permission: any) => ({
-      id: permission.id,
-      name: permission.name,
-      description: permission.description || permission.name,
-    }));
 
-    return permissions || [];
+    const permissions: RolePermission[] =
+      data.permissions.length > 0
+        ? data.permissions.map((permission: RolePermission) => ({
+            id: permission.id,
+            name: permission.name,
+            description: permission.description,
+          }))
+        : [];
+
+    return permissions;
   } catch (error) {
     console.error("Error fetching user permissions:", error);
     return [];

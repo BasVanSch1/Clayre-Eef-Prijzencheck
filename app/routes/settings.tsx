@@ -7,7 +7,7 @@ import {
   useLoaderData,
   useNavigation,
 } from "react-router";
-import DefaultProfileImage from "~/components/DefaultProfileImage";
+import { DefaultProfileImage } from "~/components/Icons";
 import type { User, UserRole } from "~/components/Types";
 import { classNames } from "~/root";
 import validator from "validator";

@@ -35,6 +35,9 @@ export async function requirePermission(
   if (
     !permissions.some((permission) => permission.name === requiredPermission)
   ) {
+    console.log(
+      `User ${user.id} does not have required permission: ${requiredPermission}`
+    );
     throw redirect(redirectTo || "/");
   }
 
