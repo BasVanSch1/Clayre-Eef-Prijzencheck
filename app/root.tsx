@@ -19,6 +19,7 @@ import { getProductCount } from "./services/productService.server";
 import { getUserFromSession } from "./services/session.server";
 import { AuthProvider } from "./services/AuthProvider";
 import { fileStorage } from "./services/filestorage.server";
+import { requireAuth } from "./services/auth.server";
 
 export function classNames(
   ...classes: (string | boolean | undefined | null)[]
@@ -37,12 +38,7 @@ export function HydrateFallback() {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const productCount = await getProductCount();
-  const user = await getUserFromSession(request);
-
-  const url = new URL(request.url);
-  if (!user && url.pathname !== "/login") {
-    return redirect("/login");
-  }
+  const user = await requireAuth(request);
 
   if (user) {
     user.avatar = await fileStorage.get(`${user.id}-avatar`);
