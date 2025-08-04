@@ -6,9 +6,9 @@ let cachedProductCount: number | null = null;
 let cachedProducts: any[] | null = null;
 
 /**
- * Fetches the product count from the API, caching the result for the length of CACHE_DURATION.
- * If the cache is still valid, it returns the cached value.
- * If the API call fails, it returns -1 or the existing cache if available.
+ * Returns the total count of products from the API.
+ * Uses a cache to avoid unnecessary API calls within the cache duration.
+ * @returns {Promise<number>} The total number of products, or -1 if unavailable.
  */
 export async function getProductCount(): Promise<number> {
   const currentTime = Date.now();
@@ -43,9 +43,9 @@ export async function getProductCount(): Promise<number> {
 }
 
 /**
- * Fetches products from the API, caching the result for the length of CACHE_DURATION.
- * If the cache is still valid, it returns the cached products.
- * If the API call fails, it returns an empty array or the cached products if available.
+ * Retrieves all products as an array from the API.
+ * Uses a cache to avoid unnecessary API calls within the cache duration.
+ * @returns {Promise<any[]>} An array of product objects, or an empty array if unavailable.
  */
 export async function getProducts(): Promise<any[]> {
   const currentTime = Date.now();
@@ -69,6 +69,5 @@ export async function getProducts(): Promise<any[]> {
     }
   }
 
-  // console.log(`Retrieved`, cachedProducts?.length ?? 0, `products from cache`);
   return cachedProducts ?? [];
 }
