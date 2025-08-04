@@ -35,7 +35,7 @@ const NavBar = () => {
         "Products",
         <span
           key="productCountBadge"
-          className="bg-indigo-50 text-indigo-500 border border-indigo-400 text-xs font-medium px-1.5 rounded-full py-0.5"
+          className="bg-indigo-50 ml-1 text-indigo-500 border border-indigo-400 text-xs font-medium px-1.5 rounded-full py-0.5"
         >
           {productCount}
         </span>,
@@ -109,10 +109,7 @@ const NavBar = () => {
                       )
                     }
                   >
-                    {item.name}
-                    {item.children && (
-                      <span className="ml-1">{item.children}</span>
-                    )}
+                    {item.children}
                   </NavLink>
                 ))}
               </div>
@@ -166,7 +163,7 @@ const NavBar = () => {
               </Menu>
             </div>
           </div>
-          <div className="-mr-2 flex items-center gap-0.5 md:hidden">
+          <div className="-mr-2 flex items-center gap-1 md:hidden">
             <Button
               onClick={toggleTheme}
               className="rounded-full p-1 bg-white shadow shadow-purple-400 dark:shadow-amber-400 cursor-pointer"
