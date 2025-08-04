@@ -1,6 +1,11 @@
 import type { Statistics } from "~/components/Types";
 import { endpoints } from "~/globals";
 
+/**
+ * Fetches statistics from the API.
+ * Uses fallback data in case of an error or if the API is unavailable.
+ * @returns {Promise<Statistics>} The statistics data
+ */
 export async function getStatistics(): Promise<Statistics> {
   // Fallback statistics in case of an error or if the API is unavailable
   const fallbackStatistics: Statistics = {
