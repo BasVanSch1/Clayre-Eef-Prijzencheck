@@ -21,14 +21,18 @@ const NavBar = () => {
   const [theme, setTheme] = useState("light");
   const user = useLoaderData().user as User | null;
   const productCount = useLoaderData().productCount as number;
-  console.log("User data in NavBar:", user, "Product count:", productCount);
 
-  const navigation = [
-    { name: "Home", href: "/" },
+  const navItems = [
+    {
+      name: "Home",
+      href: "/",
+      children: ["Home"],
+    },
     {
       name: "Products",
       href: "/products",
       children: [
+        "Products",
         <span
           key="productCountBadge"
           className="bg-indigo-50 text-indigo-500 border border-indigo-400 text-xs font-medium px-1.5 rounded-full py-0.5"
@@ -37,11 +41,22 @@ const NavBar = () => {
         </span>,
       ],
     },
-    ...(user?.permissions?.some(
-      (perm: RolePermission) => perm.name === "prijzencheck.pages.maintenance"
-    )
-      ? [{ name: "Maintenance", href: "/maintenance" }]
-      : []),
+    {
+      name: "Maintenance",
+      permission: "prijzencheck.pages.maintenance",
+      href: "/maintenance/",
+      children: ["Maintenance"],
+    },
+  ];
+
+  const navigation = [
+    ...navItems.filter((item) => {
+      if (!item.permission) return true;
+
+      return user?.permissions?.some(
+        (perm: RolePermission) => perm.name === item.permission
+      );
+    }),
   ];
 
   let userNavigation: any[];

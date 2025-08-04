@@ -2,8 +2,9 @@ import type { Route } from "./+types/maintenance";
 import { requirePermission } from "~/services/auth.server";
 import { ProductIcon, SearchIcon, UserIcon } from "~/components/Icons";
 import { NavLink, useLoaderData } from "react-router";
-import type { Statistics } from "~/components/Types";
+import type { RolePermission, Statistics } from "~/components/Types";
 import { getStatistics } from "~/services/statistics.server";
+import { getPermissions } from "~/services/userService.server";
 
 export const handle = {
   title: "Maintenance > Statistics",
@@ -22,36 +23,68 @@ export async function loader({ request }: Route.LoaderArgs) {
     "prijzencheck.pages.maintenance"
   );
 
+  user.permissions = await getPermissions(user.id); // refresh the user's permissions
+
+  const navItems = [
+    {
+      name: "Statistics",
+      href: "/maintenance/statistics",
+      children: ["Statistics"],
+    },
+    {
+      name: "Products",
+      permission: "prijzencheck.pages.maintenance.products",
+      href: "/maintenance/products",
+      children: ["Products"],
+    },
+    {
+      name: "Users",
+      permission: "prijzencheck.pages.maintenance.users",
+      href: "/maintenance/users",
+      children: ["Users"],
+    },
+    {
+      name: "Roles",
+      permission: "prijzencheck.pages.maintenance.roles",
+      href: "/maintenance/roles",
+      children: ["Roles"],
+    },
+  ];
+
+  const navigation = [
+    ...navItems.filter((item) => {
+      if (!item.permission) return true;
+
+      return user?.permissions?.some(
+        (perm: RolePermission) => perm.name === item.permission
+      );
+    }),
+  ];
+
   const statistics = await getStatistics();
 
-  return statistics;
+  return { statistics, navigation };
 }
 
 export default function Maintenance() {
-  const statistics = useLoaderData() as Statistics;
+  const statistics = useLoaderData().statistics as Statistics;
+  const navigation = useLoaderData().navigation;
 
   return (
     <div className="col-start-3 row-start-3 flex flex-col mt-5 w-[80vw]">
       <div className="grid grid-cols-3 grid-rows[1fr_1fr_1fr_1fr] md:grid-cols-[15vw_1fr_1fr_1fr] md:grid-rows-[1fr_1fr_1fr] gap-x-2 gap-y-2 ">
-        <div className="flex md:flex-col justify-evenly md:justify-start col-span-full col-start-1 row-start-1 md:col-end-1 md:row-span-full bg-neutral-600 rounded-lg shadow-md">
-          <NavLink
-            to="/maintenance"
-            className="p-2 text-white hover:bg-neutral-700 text-center rounded-t-lg"
-          >
-            Statistics
-          </NavLink>
-          <NavLink
-            to="/maintenance/products"
-            className="p-2 text-white hover:bg-neutral-700 text-center"
-          >
-            Products
-          </NavLink>
-          <NavLink
-            to="/maintenance/users"
-            className="p-2 text-white hover:bg-neutral-700 text-center"
-          >
-            Users
-          </NavLink>
+        <div className="flex md:flex-col justify-evenly md:justify-start col-span-full col-start-1 row-start-1 md:col-end-1 md:row-span-full bg-gray-800 rounded-lg shadow-md">
+          {navigation.map(
+            (item: { name: string; href: string; children: any[] }) => (
+              <NavLink
+                key={item.name}
+                to={item.href}
+                className="p-2 text-white hover:bg-gray-700 text-center rounded-lg"
+              >
+                {item.children}
+              </NavLink>
+            )
+          )}
         </div>
 
         {/* Statistic Panels row 1*/}

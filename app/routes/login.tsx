@@ -9,7 +9,8 @@ import {
 } from "react-router";
 import { classNames } from "~/root";
 import { endpoints } from "~/globals";
-import type { UserRole } from "~/components/Types";
+import type { RolePermission, UserRole } from "~/components/Types";
+import { getPermissions } from "~/services/userService.server";
 
 export const handle = {
   title: "Log in",
@@ -61,6 +62,18 @@ export async function action({ request }: Route.ActionArgs) {
 
     const userData = await res.json();
 
+    const roles = (
+      userData.roles.length > 0
+        ? userData.roles.map((role: UserRole) => ({
+            id: role.id,
+            name: role.name,
+            description: role.description,
+          }))
+        : []
+    ) as UserRole[];
+
+    const permissions: RolePermission[] = await getPermissions(userData.userId); // permissions are not included in the user data, so we fetch them separately
+
     return createUserSession({
       request,
       remember: remember === "on",
@@ -70,13 +83,8 @@ export async function action({ request }: Route.ActionArgs) {
         username: userData.userName,
         name: userData.displayName,
         email: userData.email,
-        roles: (userData.roles.length > 0
-          ? userData.roles.map((role: UserRole) => ({
-              id: role.id,
-              name: role.name,
-              description: role.description,
-            }))
-          : []) as UserRole[],
+        roles: roles,
+        permissions: permissions,
       },
     });
   } catch (error) {

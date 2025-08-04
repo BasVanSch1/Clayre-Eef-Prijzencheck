@@ -106,6 +106,7 @@ export async function createUserSession({
   session.set(keys.session.user.name, user.name);
   session.set(keys.session.user.email, user.email);
   session.set(keys.session.user.roles, user.roles);
+  session.set(keys.session.user.permissions, user.permissions);
 
   console.log(
     `Created user session for userId: ${user.id}, username: ${
