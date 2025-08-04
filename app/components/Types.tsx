@@ -7,6 +7,7 @@ export type User = {
   avatar?: File | null;
   avatarVersion?: number; // Optional field to refresh avatar when updated
   roles?: UserRole[];
+  permissions?: RolePermission[]; // Optional field so that I don't need to loop through roles to check permissions.
 };
 
 export type UserRole = {

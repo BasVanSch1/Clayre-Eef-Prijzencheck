@@ -8,10 +8,11 @@ import {
   useNavigation,
 } from "react-router";
 import { DefaultProfileImage } from "~/components/Icons";
-import type { User, UserRole } from "~/components/Types";
+import type { User } from "~/components/Types";
 import { classNames } from "~/root";
 import validator from "validator";
-import { endpoints, keys } from "~/globals";
+import { keys } from "~/globals";
+import { getUser } from "~/services/userService.server";
 
 export const handle = {
   title: "Settings",
@@ -33,42 +34,28 @@ export async function loader({ request }: Route.LoaderArgs) {
   const session = await getUserSession(request);
   const userId = session.get(keys.session.user.id);
 
-  if (!userId) return redirect("/");
+  if (!userId) {
+    console.log("Redirecting to / because userId is not found.");
+    return redirect("/");
+  }
 
   try {
-    const res = await fetch(`${endpoints.user.get}`.replace("{id}", userId));
+    const user = await getUser(userId);
 
-    if (!res.ok) {
-      console.error(
-        "Failed to refresh user with id:",
-        userId,
-        res.status,
-        res.statusText
-      );
-
+    if (!user) {
+      console.log("redirecting to / ");
       return redirect("/");
     }
 
-    const data = await res.json();
-    const user: User = {
-      id: data.userId,
-      username: data.userName,
-      name: data.displayName,
-      email: data.email,
-      avatar: await fileStorage.get(`${data.userId}-avatar`),
-      avatarVersion: Date.now(), // Use current timestamp to force reload avatar
-      roles: data.roles.map((role: UserRole) => ({
-        id: role.id,
-        name: role.name,
-        description: role.description,
-      })),
-    };
+    user.avatar = await fileStorage.get(`${user.id}-avatar`);
+    user.avatarVersion = Date.now(); // Use current timestamp to force reload avatar
 
     session.set(keys.session.user.id, user.id);
     session.set(keys.session.user.username, user.username);
     session.set(keys.session.user.name, user.name);
     session.set(keys.session.user.email, user.email);
     session.set(keys.session.user.roles, user.roles);
+    session.set(keys.session.user.permissions, user.permissions);
 
     return new Response(JSON.stringify({ user }), {
       headers: {

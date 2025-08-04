@@ -30,18 +30,13 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
+  // TODO: move authentication logic to a service
+
   const formData = await request.formData();
   const username = formData.get("username");
   const password = formData.get("password");
   const redirectTo = formData.get("redirectTo") || "/";
   const remember = formData.get("remember");
-
-  // console.log("Login action called with data:", {
-  //   username,
-  //   password,
-  //   redirectTo,
-  //   remember,
-  // });
 
   if (
     typeof username !== "string" ||

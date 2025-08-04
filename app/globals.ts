@@ -41,6 +41,7 @@ export const keys = {
             name: "userName",
             email: "userEmail",
             roles: "userRoles",
+            permissions: "userPermissions",
         }
     }
 }
