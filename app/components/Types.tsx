@@ -21,3 +21,13 @@ export type RolePermission = {
   name: string;
   description?: string;
 };
+
+export type Statistics = {
+  id: string;
+  name: string;
+  lookupsByEAN: number;
+  lookupsByCode: number;
+  totalLookups: number;
+  totalProducts: number;
+  totalUsers: number;
+};

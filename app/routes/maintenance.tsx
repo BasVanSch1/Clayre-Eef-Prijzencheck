@@ -1,7 +1,9 @@
 import type { Route } from "./+types/maintenance";
 import { requirePermission } from "~/services/auth.server";
 import { ProductIcon, SearchIcon, UserIcon } from "~/components/Icons";
-import { NavLink } from "react-router";
+import { NavLink, useLoaderData } from "react-router";
+import type { Statistics } from "~/components/Types";
+import { getStatistics } from "~/services/statistics.server";
 
 export const handle = {
   title: "Maintenance > Statistics",
@@ -20,10 +22,14 @@ export async function loader({ request }: Route.LoaderArgs) {
     "prijzencheck.pages.maintenance"
   );
 
-  return null;
+  const statistics = await getStatistics();
+
+  return statistics;
 }
 
 export default function Maintenance() {
+  const statistics = useLoaderData() as Statistics;
+
   return (
     <div className="col-start-3 row-start-3 flex flex-col mt-5 w-[80vw]">
       <div className="grid grid-cols-3 grid-rows[1fr_1fr_1fr_1fr] md:grid-cols-[15vw_1fr_1fr_1fr] md:grid-rows-[1fr_1fr_1fr] gap-x-2 gap-y-2 ">
@@ -56,7 +62,9 @@ export default function Maintenance() {
               Products
             </h2>
           </div>
-          <p className="text-gray-600 text-2xl text-center p-2">13,726</p>
+          <p className="text-gray-600 text-2xl text-center p-2">
+            {statistics.totalProducts}
+          </p>
         </div>
 
         <div className="col-start-2 row-start-2 md:col-start-3 md:row-start-1 flex flex-col bg-gradient-to-t from-teal-300/80 from-5% via-teal-300 to-teal-300/80 to-95% rounded-xl shadow-md w-full md:flex-grow">
@@ -66,7 +74,9 @@ export default function Maintenance() {
               Lookups
             </h2>
           </div>
-          <p className="text-gray-600 text-2xl text-center p-2">7,251</p>
+          <p className="text-gray-600 text-2xl text-center p-2">
+            {statistics.totalLookups}
+          </p>
         </div>
 
         <div className="col-start-3 row-start-2 md:col-start-4 md:row-start-1 flex flex-col bg-gradient-to-t from-amber-200/80 from-5% via-amber-200 to-amber-200/80 to-95% rounded-xl shadow-md w-full md:flex-grow">
@@ -76,7 +86,9 @@ export default function Maintenance() {
               Users
             </h2>
           </div>
-          <p className="text-gray-600 text-2xl text-center p-2">2</p>
+          <p className="text-gray-600 text-2xl text-center p-2">
+            {statistics.totalUsers}
+          </p>
         </div>
 
         {/* Statistic Panels row 2*/}
@@ -87,7 +99,9 @@ export default function Maintenance() {
               By EAN
             </h2>
           </div>
-          <p className="text-gray-600 text-2xl text-center p-2">7,251</p>
+          <p className="text-gray-600 text-2xl text-center p-2">
+            {statistics.lookupsByEAN}
+          </p>
         </div>
 
         {/* Statistic Panels row 3*/}
@@ -98,7 +112,9 @@ export default function Maintenance() {
               By code
             </h2>
           </div>
-          <p className="text-gray-600 text-2xl text-center p-2">7,251</p>
+          <p className="text-gray-600 text-2xl text-center p-2">
+            {statistics.lookupsByCode}
+          </p>
         </div>
       </div>
     </div>
