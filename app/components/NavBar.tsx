@@ -14,13 +14,14 @@ import Logo from "/milatonie_logo.svg";
 import { useEffect, useState } from "react";
 import { classNames } from "~/root";
 import { useLoaderData } from "react-router";
-import type { User } from "./Types";
+import type { RolePermission, User } from "./Types";
 import { DefaultProfileImage } from "./Icons";
 
 const NavBar = () => {
   const [theme, setTheme] = useState("light");
   const user = useLoaderData().user as User | null;
   const productCount = useLoaderData().productCount as number;
+  console.log("User data in NavBar:", user, "Product count:", productCount);
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -36,6 +37,11 @@ const NavBar = () => {
         </span>,
       ],
     },
+    ...(user?.permissions?.some(
+      (perm: RolePermission) => perm.name === "prijzencheck.pages.maintenance"
+    )
+      ? [{ name: "Maintenance", href: "/maintenance" }]
+      : []),
   ];
 
   let userNavigation: any[];

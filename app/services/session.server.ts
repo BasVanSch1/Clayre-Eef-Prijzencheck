@@ -74,6 +74,7 @@ export async function getUserFromSession(
     name: session.get(keys.session.user.name),
     email: session.get(keys.session.user.email),
     roles: session.get(keys.session.user.roles),
+    permissions: session.get(keys.session.user.permissions),
   };
 
   return user;
