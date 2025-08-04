@@ -14,28 +14,49 @@ import Logo from "/milatonie_logo.svg";
 import { useEffect, useState } from "react";
 import { classNames } from "~/root";
 import { useLoaderData } from "react-router";
-import type { User } from "./Types";
-import DefaultProfileImage from "./DefaultProfileImage";
+import type { RolePermission, User } from "./Types";
+import { DefaultProfileImage } from "./Icons";
 
 const NavBar = () => {
   const [theme, setTheme] = useState("light");
   const user = useLoaderData().user as User | null;
   const productCount = useLoaderData().productCount as number;
 
-  const navigation = [
-    { name: "Home", href: "/" },
+  const navItems = [
+    {
+      name: "Home",
+      href: "/",
+      children: ["Home"],
+    },
     {
       name: "Products",
       href: "/products",
       children: [
+        "Products",
         <span
           key="productCountBadge"
-          className="bg-indigo-50 text-indigo-500 border border-indigo-400 text-xs font-medium px-1.5 rounded-full py-0.5"
+          className="bg-indigo-50 ml-1 text-indigo-500 border border-indigo-400 text-xs font-medium px-1.5 rounded-full py-0.5"
         >
           {productCount}
         </span>,
       ],
     },
+    {
+      name: "Maintenance",
+      permission: "prijzencheck.pages.maintenance",
+      href: "/maintenance/",
+      children: ["Maintenance"],
+    },
+  ];
+
+  const navigation = [
+    ...navItems.filter((item) => {
+      if (!item.permission) return true;
+
+      return user?.permissions?.some(
+        (perm: RolePermission) => perm.name === item.permission
+      );
+    }),
   ];
 
   let userNavigation: any[];
@@ -88,10 +109,7 @@ const NavBar = () => {
                       )
                     }
                   >
-                    {item.name}
-                    {item.children && (
-                      <span className="ml-1">{item.children}</span>
-                    )}
+                    {item.children}
                   </NavLink>
                 ))}
               </div>
@@ -145,7 +163,7 @@ const NavBar = () => {
               </Menu>
             </div>
           </div>
-          <div className="-mr-2 flex items-center gap-0.5 md:hidden">
+          <div className="-mr-2 flex items-center gap-1 md:hidden">
             <Button
               onClick={toggleTheme}
               className="rounded-full p-1 bg-white shadow shadow-purple-400 dark:shadow-amber-400 cursor-pointer"

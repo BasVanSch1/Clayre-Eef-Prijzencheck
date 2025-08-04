@@ -16,10 +16,20 @@ const sessionStorage = createCookieSessionStorage({
 
 export const { commitSession, destroySession } = sessionStorage;
 
+/**
+ * Retrieves the user session from the request cookies.
+ * @param {Request} request - The incoming request object.
+ * @returns {Promise<Session>} The session object.
+ */
 export const getUserSession = async (request: Request) => {
   return await sessionStorage.getSession(request.headers.get("Cookie"));
 };
 
+/**
+ * Logs out the current user by destroying their session and redirecting to the login page.
+ * @param {Request} request - The incoming request object.
+ * @returns {Promise<Response>} Redirect response to the login page.
+ */
 export async function logout(request: Request) {
   const session = await getUserSession(request);
   console.log(
@@ -35,12 +45,22 @@ export async function logout(request: Request) {
   });
 }
 
+/**
+ * Retrieves the user ID from the session, if available.
+ * @param {Request} request - The incoming request object.
+ * @returns {Promise<string | undefined>} The user ID or undefined if not found.
+ */
 export async function getUserId(request: Request): Promise<string | undefined> {
   const session = await getUserSession(request);
   const userId = session.get(keys.session.user.id);
   return userId;
 }
 
+/**
+ * Retrieves the user object from the session, if available.
+ * @param {Request} request - The incoming request object.
+ * @returns {Promise<User | null>} The user object or null if not found.
+ */
 export async function getUserFromSession(
   request: Request
 ): Promise<User | null> {
@@ -54,11 +74,21 @@ export async function getUserFromSession(
     name: session.get(keys.session.user.name),
     email: session.get(keys.session.user.email),
     roles: session.get(keys.session.user.roles),
+    permissions: session.get(keys.session.user.permissions),
   };
 
   return user;
 }
 
+/**
+ * Creates a new user session and redirects to the specified URL or home page.
+ * @param {Object} params - The parameters for session creation.
+ * @param {Request} params.request - The incoming request object.
+ * @param {boolean} params.remember - Whether to remember the session for 7 days or 1 hour.
+ * @param {string} [params.redirectUrl] - Optional URL to redirect to after session creation.
+ * @param {User} params.user - The user object to store in the session.
+ * @returns {Promise<Response>} Redirect response to the specified URL or home page.
+ */
 export async function createUserSession({
   request,
   remember = false,
@@ -76,6 +106,7 @@ export async function createUserSession({
   session.set(keys.session.user.name, user.name);
   session.set(keys.session.user.email, user.email);
   session.set(keys.session.user.roles, user.roles);
+  session.set(keys.session.user.permissions, user.permissions);
 
   console.log(
     `Created user session for userId: ${user.id}, username: ${

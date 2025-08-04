@@ -1,20 +1,23 @@
 import { useState } from "react";
 import { Form, useNavigate } from "react-router";
+import { classNames } from "~/root";
 
 interface LookupCardProps {
   cardTitle: string;
   inputPlaceholder: string;
   buttonText: string;
-  type: "ean" | "productcode";
+  id: string;
   autoFocus?: boolean;
+  className?: string;
 }
 
 const LookupCard = ({
   cardTitle,
   inputPlaceholder,
   buttonText,
-  type,
+  id,
   autoFocus = false,
+  className = "",
 }: LookupCardProps) => {
   const navigate = useNavigate();
   const [lookupInput, setLookupInput] = useState("");
@@ -28,19 +31,18 @@ const LookupCard = ({
       return;
     }
 
-    const url =
-      type === "ean"
-        ? `/product/ean/${trimmedInput}`
-        : `/product/${trimmedInput}`;
+    // EAN and Product Code can now be looked up using the same endpoint
+    // const url =
+    //   type === "ean"
+    //     ? `/product/ean/${trimmedInput}`
+    //     : `/product/${trimmedInput}`;
 
-    navigate(url);
+    navigate(`/product/${trimmedInput}`);
     resetInput();
   };
 
   function resetInput() {
-    const inputElement = document.getElementById(
-      `search-${type}`
-    ) as HTMLInputElement;
+    const inputElement = document.getElementById(`${id}`) as HTMLInputElement;
     if (inputElement) {
       inputElement.value = "";
       inputElement.focus();
@@ -49,7 +51,12 @@ const LookupCard = ({
 
   return (
     <>
-      <div className="relative flex flex-col rounded-md border-1 border-gray-400/40 bg-white p-6 px-8 shadow-md grow gap-1 md:gap-3 dark:bg-neutral-700 dark:shadow dark:shadow-purple-600">
+      <div
+        className={classNames(
+          className,
+          "relative flex flex-col rounded-md border-1 border-gray-400/40 bg-white p-6 px-8 shadow-md grow gap-1 md:gap-3 dark:bg-neutral-700 dark:shadow dark:shadow-purple-600"
+        )}
+      >
         <div className="text-center text-xl font-semibold dark:text-neutral-300">
           {cardTitle}
         </div>
@@ -77,7 +84,7 @@ const LookupCard = ({
 
             <input
               type="text"
-              id={`search-${type}`}
+              id={id}
               placeholder={inputPlaceholder}
               onChange={(e) => setLookupInput(e.target.value)}
               className="block w-full rounded-lg border border-gray-400 bg-white p-4 ps-10 text-sm text-gray-900 focus:ring-0 focus:outline-none focus:border-[#0066ff] transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"

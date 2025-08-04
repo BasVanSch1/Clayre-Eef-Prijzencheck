@@ -1,8 +1,15 @@
 import validator from "validator";
 import { fileStorage } from "./filestorage.server";
 import { endpoints } from "~/globals";
-import type { RolePermission } from "~/components/Types";
+import type { RolePermission, User, UserRole } from "~/components/Types";
 
+/**
+ * Updates the user settings such as display name, email, and profile image.
+ * Validates input, handles image upload, and sends a PATCH request to update user data.
+ * @param userId - The ID of the user to update.
+ * @param formData - The form data containing updated user settings.
+ * @returns An object with a status code, message, and optional fields with errors.
+ */
 export async function updateUserSettings(
   userId: string,
   formData: FormData
@@ -86,6 +93,13 @@ export async function updateUserSettings(
   }
 }
 
+/**
+ * Updates the user's password after verifying the current password.
+ * Validates input, checks password requirements, and sends a PATCH request to update the password.
+ * @param userId - The ID of the user whose password is being updated.
+ * @param formData - The form data containing current, new, and confirmation passwords.
+ * @returns An object with a status code, message, and optional fields with errors.
+ */
 export async function updateUserPassword(
   userId: string,
   formData: FormData
@@ -185,6 +199,12 @@ export async function updateUserPassword(
   }
 }
 
+/**
+ * Retrieves the permissions assigned to a user.
+ * Fetches permissions from the backend and returns them as an array of RolePermission objects.
+ * @param userId - The ID of the user whose permissions are being fetched.
+ * @returns An array of RolePermission objects.
+ */
 export async function getPermissions(
   userId: string
 ): Promise<RolePermission[]> {
@@ -205,15 +225,69 @@ export async function getPermissions(
     }
 
     const data = await res.json();
-    const permissions: RolePermission[] = data.map((permission: any) => ({
-      id: permission.id,
-      name: permission.name,
-      description: permission.description || permission.name,
-    }));
 
-    return permissions || [];
+    const permissions: RolePermission[] =
+      data.permissions.length > 0
+        ? data.permissions.map((permission: RolePermission) => ({
+            id: permission.id,
+            name: permission.name,
+            description: permission.description,
+          }))
+        : [];
+
+    return permissions;
   } catch (error) {
     console.error("Error fetching user permissions:", error);
     return [];
+  }
+}
+
+/**
+ * Retrieves a user by their ID.
+ * Fetches user data from the backend and returns it as a User object.
+ * @param userId - The ID of the user to fetch.
+ * @returns The User object if found, otherwise null.
+ */
+export async function getUser(userId: string): Promise<User | null> {
+  try {
+    const res = await fetch(`${endpoints.user.get}`.replace("{id}", userId), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch user:", await res.json());
+      return null;
+    }
+
+    const data = await res.json();
+
+    const roles = (
+      data.roles.length > 0
+        ? data.roles.map((role: UserRole) => ({
+            id: role.id,
+            name: role.name,
+            description: role.description,
+          }))
+        : []
+    ) as UserRole[];
+
+    const permissions: RolePermission[] = await getPermissions(userId); // permissions are not included in the user data, so we fetch them separately
+
+    const user: User = {
+      id: data.userId,
+      username: data.userName,
+      name: data.displayName,
+      email: data.email,
+      roles: roles,
+      permissions: permissions,
+    };
+
+    return user;
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return null;
   }
 }
