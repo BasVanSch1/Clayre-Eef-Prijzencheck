@@ -1,3 +1,5 @@
+import { get } from "http"
+
 export const endpoints = {
     user: {
         get: (process.env.API_URL ?? '') + (process.env.USER_ENDPOINT ?? ''),
@@ -14,7 +16,6 @@ export const endpoints = {
     products: {
         get: (process.env.API_URL ?? '') + (process.env.PRODUCT_ENDPOINT ?? ''),
         getAll: (process.env.API_URL ?? '') + (process.env.ALL_PRODUCT_ENDPOINT ?? ''),
-        getByEan: (process.env.API_URL ?? '') + (process.env.PRODUCT_EAN_ENDPOINT ?? ''),
         count: (process.env.API_URL ?? '') + (process.env.PRODUCT_COUNT_ENDPOINT ?? ''),
     },
     role: {
@@ -31,6 +32,12 @@ export const endpoints = {
         update: (process.env.API_URL ?? '') + (process.env.UPDATE_PERMISSION_ENDPOINT ?? ''),
         delete: (process.env.API_URL ?? '') + (process.env.DELETE_PERMISSION_ENDPOINT ?? ''),
     },
+    statistics: {
+        get: (process.env.API_URL ?? '') + (process.env.STATISTICS_ENDPOINT ?? ''),
+        getAll: (process.env.API_URL ?? '') + (process.env.ALL_STATISTICS_ENDPOINT ?? ''),
+        create: (process.env.API_URL ?? '') + (process.env.CREATE_STATISTICS_ENDPOINT ?? ''),
+        delete: (process.env.API_URL ?? '') + (process.env.DELETE_STATISTICS_ENDPOINT ?? ''),
+    }
 }
 
 export const keys = {

@@ -76,9 +76,7 @@ export async function loader({ params }: Route.LoaderArgs) {
     return null;
   }
 
-  const res = await fetch(
-    `${endpoints.products.getByEan}`.replace("{id}", eanCode)
-  );
+  const res = await fetch(`${endpoints.products.get}`.replace("{id}", eanCode));
   // console.log(
   //   `Fetching product with EAN code: ${eanCode}; Status: ${res.status}`
   // );
