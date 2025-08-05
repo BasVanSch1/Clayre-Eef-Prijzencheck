@@ -4,9 +4,10 @@ import { endpoints } from "~/globals";
 /**
  * Fetches statistics from the API.
  * Uses fallback data in case of an error or if the API is unavailable.
+ * @param {string} [username] - Optional username for personalized statistics
  * @returns {Promise<Statistics>} The statistics data
  */
-export async function getStatistics(): Promise<Statistics> {
+export async function getStatistics(username?: string): Promise<Statistics> {
   // Fallback statistics in case of an error or if the API is unavailable
   const fallbackStatistics: Statistics = {
     id: "Fallback",
@@ -20,7 +21,7 @@ export async function getStatistics(): Promise<Statistics> {
 
   try {
     const res = await fetch(
-      `${endpoints.statistics.get}`.replace("{id}", "prijzencheck")
+      `${endpoints.statistics.get}`.replace("{id}", username ?? "prijzencheck")
     );
 
     if (!res.ok) {
