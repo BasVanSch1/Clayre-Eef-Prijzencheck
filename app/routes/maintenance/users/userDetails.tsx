@@ -1,89 +1,67 @@
-import { useEffect, useState } from "react";
-import type { Route } from "./+types/settings";
+import { requirePermission } from "~/services/auth.server";
+import type { Route } from "./+types/userDetails";
+import { getUser } from "~/services/userService.server";
+import { getStatistics } from "~/services/statistics.server";
 import {
   Form,
-  redirect,
   useActionData,
   useLoaderData,
   useNavigation,
 } from "react-router";
-import { DefaultProfileImage, SearchIconInput } from "~/components/Icons";
 import type { Statistics, User } from "~/components/Types";
-import { classNames } from "~/root";
+import { useEffect, useState } from "react";
 import validator from "validator";
-import { keys } from "~/globals";
-import { getUser } from "~/services/userService.server";
-import { getStatistics } from "~/services/statistics.server";
-import { getUserFromSession } from "~/services/session.server";
+import { DefaultProfileImage, SearchIconInput } from "~/components/Icons";
+import { classNames } from "~/root";
+import { fileStorage } from "~/services/filestorage.server";
 
 export const handle = {
-  title: "Settings",
+  title: "Maintenance > Users > User Details",
 };
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Prijzencheck - Settings" },
-    { name: "description", content: "Prijzencheck Settings" },
+    { title: "Prijzencheck - User Maintenance" },
+    { name: "description", content: "Prijzencheck User Maintenance" },
   ];
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const { getUserSession, commitSession } = await import(
-    "~/services/session.server"
+export async function loader({ params, request }: Route.LoaderArgs) {
+  const loggedInUser = await requirePermission(
+    request,
+    "prijzencheck.pages.maintenance.users"
   );
-  const { fileStorage } = await import("~/services/filestorage.server");
 
-  const session = await getUserSession(request);
-  const sessionUser = await getUserFromSession(request);
+  const user = await getUser(params.id);
 
-  if (!sessionUser) {
-    return redirect("/");
+  if (!user) {
+    throw new Response("User not found", { status: 404 });
   }
 
-  const userId = sessionUser.id;
-  const username = sessionUser.username;
-
-  try {
-    const user = await getUser(userId);
-
-    if (!user) {
-      console.log("redirecting to / ");
-      return redirect("/");
-    }
-
-    const stats = await getStatistics(username);
-
-    user.avatar = await fileStorage.get(`${user.id}-avatar`);
-    user.avatarVersion = Date.now(); // Use current timestamp to force reload avatar
-
-    session.set(keys.session.user.id, user.id);
-    session.set(keys.session.user.username, user.username);
-    session.set(keys.session.user.name, user.name);
-    session.set(keys.session.user.email, user.email);
-    session.set(keys.session.user.roles, user.roles);
-    session.set(keys.session.user.permissions, user.permissions);
-
-    return new Response(JSON.stringify({ user, stats }), {
-      headers: {
-        "Content-Type": "application/json",
-        "Set-Cookie": await commitSession(session),
-      },
-    });
-  } catch (error) {
-    console.error("Failed to refresh user data:", error);
-    return redirect("/");
+  const stats = await getStatistics(user.username);
+  if (!stats) {
+    throw new Response("Statistics not found", { status: 404 });
   }
+
+  user.avatar = await fileStorage.get(`${user.id}-avatar`);
+  user.avatarVersion = Date.now();
+
+  return { user, stats };
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const { getUserSession } = await import("~/services/session.server");
-  const session = await getUserSession(request);
-  const userId = session.get(keys.session.user.id);
-  const userDisplayName = session.get(keys.session.user.name);
-  const userEmail = session.get(keys.session.user.email);
   const formData = await request.formData();
   const actionType = formData.get("_action");
   const image = formData.get("profileImage") as File | null;
+  const userId = new URL(request.url).pathname.split("/").pop();
+  if (!userId) {
+    return { code: 400, message: "User ID is required.", action: actionType };
+  }
+
+  const user = await getUser(userId);
+  if (!user) {
+    return { code: 404, message: "User not found.", action: actionType };
+  }
 
   if (actionType === "updateUserSettings") {
     const { updateUserSettings } = await import(
@@ -91,8 +69,9 @@ export async function action({ request }: Route.ActionArgs) {
     );
 
     if (
-      userDisplayName === formData.get("displayName") &&
-      (userEmail === formData.get("newEmail") ||
+      user.username === formData.get("username") &&
+      user.name === formData.get("displayName") &&
+      (user.email === formData.get("newEmail") ||
         formData.get("newEmail") === "") &&
       (image === null || image.size === 0)
     ) {
@@ -103,7 +82,7 @@ export async function action({ request }: Route.ActionArgs) {
       };
     }
 
-    const result = await updateUserSettings(userId, formData);
+    const result = await updateUserSettings(user.id, formData, true);
 
     return {
       code: result.code,
@@ -118,7 +97,7 @@ export async function action({ request }: Route.ActionArgs) {
       "~/services/userService.server"
     );
 
-    const result = await updateUserPassword(userId, formData);
+    const result = await updateUserPassword(user.id, formData, true);
 
     return {
       code: result.code,
@@ -131,10 +110,21 @@ export async function action({ request }: Route.ActionArgs) {
   return { code: 400, message: "Invalid action.", action: actionType };
 }
 
-export default function Settings() {
-  const data = useLoaderData();
-  const user: User = data?.user;
-  const stats: Statistics = data?.stats;
+export function HydrateFallback() {
+  return (
+    <div className="col-start-3 row-start-3 flex flex-col mt-5">
+      <div className="rounded-md border-1 border-gray-400/40 bg-white p-6 shadow-md">
+        <div className="text-lg text-center font-mono">Loading user...</div>
+      </div>
+    </div>
+  );
+}
+
+export default function UserDetails() {
+  const loaderData = useLoaderData();
+  const user: User = loaderData.user;
+  const stats: Statistics = loaderData.stats;
+
   const [file, setFile] = useState<string | null>();
 
   const actionData = useActionData<{
@@ -201,17 +191,9 @@ export default function Settings() {
 
   return (
     <>
-      <div className="col-start-3 row-start-3 flex flex-col mt-5 w-[80vw]">
-        <div className="grid grid-cols-[20vw_auto] gap-x-2 grid-rows-[auto_auto_auto_auto_auto] gap-y-2">
-          <div className="col-start-1 row-start-1">
-            <h1 className="mt-2 md:text-xl font-semibold text-black dark:text-neutral-300">
-              User settings
-            </h1>
-            <p className="text-gray-700 dark:text-neutral-400 text-sm md:text-base">
-              Manage your account settings and preferences.
-            </p>
-          </div>
-          <div className="col-start-2 row-start-1 flex flex-col">
+      <div>
+        <div className="grid grid-cols-1 gap-x-2 grid-rows-[auto_auto_auto_auto_auto] gap-y-2">
+          <div className="flex flex-col">
             <Form
               method="post"
               action="?updateUser"
@@ -270,8 +252,7 @@ export default function Settings() {
                     type="text"
                     name="username"
                     defaultValue={user.username}
-                    className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base text-gray-700 transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
-                    readOnly
+                    className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
                   />
                 </div>
 
@@ -398,47 +379,10 @@ export default function Settings() {
             </Form>
           </div>
 
-          <hr className="col-span-full row-start-2 my-2 h-px border-0 bg-gray-400/40" />
+          <hr className="row-start-2 my-2 h-px border-0 bg-gray-400/40" />
 
-          <div className="col-start-1 row-start-3">
-            <h1 className="md:text-xl font-semibold dark:text-neutral-300">
-              Change password
-            </h1>
-            <p className="text-sm md:text-base text-gray-700 dark:text-neutral-400">
-              Update your password associated with your account.
-            </p>
-          </div>
-          <div className="col-start-2 row-start-3 flex flex-col">
+          <div className="row-start-3 flex flex-col">
             <Form method="post" action="?updatePassword">
-              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
-                Current password
-              </label>
-              <input
-                type="password"
-                name="currentPassword"
-                placeholder="Current Password"
-                className={classNames(
-                  "p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                  feedback.find((error) =>
-                    error.fields?.includes("currentPassword")
-                  )
-                    ? "focus:outline-0 border-red-500"
-                    : ""
-                )}
-                required
-              />
-              {feedback.find((error) =>
-                error.fields?.includes("currentPassword")
-              ) && (
-                <p className="text-red-600 text-xs md:text-sm">
-                  {
-                    feedback.find((error) =>
-                      error.fields?.includes("currentPassword")
-                    )?.message
-                  }
-                </p>
-              )}
-
               <div className="flex flex-col md:gap-2 md:flex-row">
                 <div>
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
@@ -540,17 +484,7 @@ export default function Settings() {
 
           <hr className="col-span-full row-start-4 my-2 h-px border-0 bg-gray-400/40" />
 
-          <div className="col-start-1 row-start-5">
-            <div>
-              <h1 className="md:text-xl font-semibold dark:text-neutral-300">
-                Additional details
-              </h1>
-              <p className="text-sm md:text-base text-gray-700 dark:text-neutral-400">
-                Additional (readonly) information about your account.
-              </p>
-            </div>
-          </div>
-          <div className="col-start-2 row-start-5 flex flex-col">
+          <div className="row-start-5 flex flex-col">
             <div className="flex flex-col md:flex-row md:gap-4">
               <div>
                 <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">

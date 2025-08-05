@@ -8,14 +8,17 @@ import type { RolePermission, User, UserRole } from "~/components/Types";
  * Validates input, handles image upload, and sends a PATCH request to update user data.
  * @param userId - The ID of the user to update.
  * @param formData - The form data containing updated user settings.
+ * @param admin - If true, allows updating username.
  * @returns An object with a status code, message, and optional fields with errors.
  */
 export async function updateUserSettings(
   userId: string,
-  formData: FormData
+  formData: FormData,
+  admin?: boolean
 ): Promise<{ code: number; message?: string; fields?: string[] }> {
   let displayName = formData.get("displayName") as string | null;
   let newEmail = formData.get("newEmail") as string | null;
+  let username = formData.get("username") as string | null;
   const confirmEmail = formData.get("confirmEmail") as string;
   let newImage = formData.get("profileImage") as File | null;
 
@@ -58,6 +61,14 @@ export async function updateUserSettings(
     return { code: 400, message: "Invalid email.", fields: ["newEmail"] };
   }
 
+  if (admin && username && (username.length <= 0 || username.trim() === "")) {
+    return {
+      code: 400,
+      message: "Username cannot be empty.",
+      fields: ["username"],
+    };
+  }
+
   const formattedBody =
     "[" +
     (displayName
@@ -65,6 +76,9 @@ export async function updateUserSettings(
       : `{"op": "replace", "path": "/displayName", "value": null},`) +
     (newEmail
       ? `{"op": "replace", "path": "/email", "value": "${newEmail}"},`
+      : "") +
+    (admin && username
+      ? `{"op": "replace", "path": "/userName", "value": "${username}"},`
       : "") +
     "]";
 
@@ -98,22 +112,27 @@ export async function updateUserSettings(
  * Validates input, checks password requirements, and sends a PATCH request to update the password.
  * @param userId - The ID of the user whose password is being updated.
  * @param formData - The form data containing current, new, and confirmation passwords.
+ * @param force - If true, skips current password verification (for admin use).
  * @returns An object with a status code, message, and optional fields with errors.
  */
 export async function updateUserPassword(
   userId: string,
-  formData: FormData
+  formData: FormData,
+  force?: boolean
 ): Promise<{ code: number; message?: string; fields?: string[] }> {
-  const currentPassword = formData.get("currentPassword") as string;
+  const currentPassword = formData.get("currentPassword") as string | null;
   const newPassword = formData.get("newPassword") as string;
   const confirmPassword = formData.get("confirmPassword") as string;
 
-  if (!currentPassword || currentPassword.trim() === "") {
-    return {
-      code: 400,
-      message: "Current password is required.",
-      fields: ["currentPassword"],
-    };
+  // Validate current password if force is not set (to true)
+  if (!force) {
+    if (!currentPassword || currentPassword.trim() === "") {
+      return {
+        code: 400,
+        message: "Current password is required.",
+        fields: ["currentPassword"],
+      };
+    }
   }
 
   if (newPassword !== confirmPassword) {
@@ -135,38 +154,40 @@ export async function updateUserPassword(
     };
   }
 
-  try {
-    const res = await fetch(
-      `${endpoints.authentication.verify}`.replace("{id}", userId),
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          password: currentPassword,
-        }),
-      }
-    );
+  if (!force) {
+    try {
+      const res = await fetch(
+        `${endpoints.authentication.verify}`.replace("{id}", userId),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            password: currentPassword,
+          }),
+        }
+      );
 
-    if (!res.ok) {
-      if (res.status === 401) {
+      if (!res.ok) {
+        if (res.status === 401) {
+          return {
+            code: res.status,
+            message: "Current password is incorrect.",
+            fields: ["currentPassword"],
+          };
+        }
+
         return {
           code: res.status,
-          message: "Current password is incorrect.",
+          message: res.statusText,
           fields: ["currentPassword"],
         };
       }
-
-      return {
-        code: res.status,
-        message: res.statusText,
-        fields: ["currentPassword"],
-      };
+    } catch (error) {
+      console.error("Error verifying current password:", error);
+      return { code: 500, message: `${error}` }; // Internal Server Error
     }
-  } catch (error) {
-    console.error("Error verifying current password:", error);
-    return { code: 500, message: `${error}` }; // Internal Server Error
   }
 
   const formattedBody =
@@ -187,14 +208,14 @@ export async function updateUserPassword(
     );
 
     if (!res.ok) {
-      console.error("Failed to update user settings:", await res.json());
+      console.error("Failed to update user password:", await res.json());
 
       return { code: res.status, message: res.statusText };
     }
 
     return { code: 204, message: "Succesfully updated password." }; // No Content
   } catch (error) {
-    console.error("Error updating user settings:", error);
+    console.error("Error updating user password:", error);
     return { code: 500, message: `${error}` }; // Internal Server Error
   }
 }
