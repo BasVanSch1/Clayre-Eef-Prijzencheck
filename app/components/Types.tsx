@@ -14,12 +14,13 @@ export type UserRole = {
   id: string;
   name: string;
   description?: string;
+  permissions?: RolePermission[];
 };
 
 export type RolePermission = {
   id: string;
   name: string;
-  description?: string;
+  description: string;
 };
 
 export type Statistics = {

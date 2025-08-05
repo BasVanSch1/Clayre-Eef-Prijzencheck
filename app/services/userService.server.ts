@@ -291,3 +291,45 @@ export async function getUser(userId: string): Promise<User | null> {
     return null;
   }
 }
+
+export async function getUsers(): Promise<User[]> {
+  try {
+    const res = await fetch(endpoints.user.getAll, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch users:", await res.json());
+      return [];
+    }
+
+    const data = await res.json();
+
+    const users: User[] = data
+      ? data.map((user: any) => ({
+          id: user.userId,
+          username: user.userName,
+          name: user.displayName,
+          email: user.email,
+          roles:
+            (user.roles &&
+              user.roles.map((role: UserRole) => {
+                return {
+                  id: role.id,
+                  name: role.name,
+                  description: role.description,
+                };
+              })) ||
+            [],
+        }))
+      : [];
+
+    return users;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return [];
+  }
+}

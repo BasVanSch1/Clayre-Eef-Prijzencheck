@@ -11,6 +11,11 @@ export default [
   route("login", "routes/login.tsx"),
   route("logout", "routes/logout.tsx"),
   route("settings", "routes/settings.tsx"),
-  route("maintenance", "routes/maintenance.tsx"),
   route("data/:id", "routes/retrieveData.tsx"),
+  route("maintenance", "routes/layouts/maintenance.tsx", [
+    index("routes/maintenance/statistics.tsx"),
+    route("roles", "routes/maintenance/roles.tsx"),
+    route("users", "routes/maintenance/users.tsx"),
+    route("products", "routes/maintenance/products.tsx"),
+  ]),
 ] satisfies RouteConfig;
