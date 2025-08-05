@@ -109,20 +109,22 @@ const UsersTable = ({ data }: UsersTableProps) => {
                 <td className={tdClassNames}>{user.username}</td>
                 <td className={tdClassNames}>{user.email}</td>
                 <td
-                  className={`${tdClassNames} hidden  md:flex md:flex-wrap gap-1`}
+                  className={`${tdClassNames} hidden md:flex md:flex-wrap gap-1`}
                 >
-                  {user.roles
-                    ? user.roles.map((role) => {
-                        return (
-                          <p
-                            key={role.id}
-                            className="border border-blue-400 rounded-md shadow-md bg-blue-300 text-black text-sm p-1"
-                          >
-                            {role.name}
-                          </p>
-                        );
-                      })
-                    : "No roles"}
+                  {user.roles && user.roles.length > 0 ? (
+                    user.roles.map((role) => {
+                      return (
+                        <p
+                          key={role.id}
+                          className="border border-blue-400 rounded-md shadow-md bg-blue-300 text-black text-sm p-1"
+                        >
+                          {role.name}
+                        </p>
+                      );
+                    })
+                  ) : (
+                    <p className="text-xs">No roles</p>
+                  )}
                 </td>
               </tr>
             ))

@@ -1,3 +1,4 @@
+import type { Product } from "~/components/Types";
 import { endpoints } from "~/globals";
 
 const CACHE_DURATION = 1 * 60 * 60 * 1000; // 1 hour in milliseconds (hour * min * sec * ms)
@@ -70,4 +71,37 @@ export async function getProducts(): Promise<any[]> {
   }
 
   return cachedProducts ?? [];
+}
+
+/**
+ * Retrieves a product from the API.
+ * @param {string} code - The product code or ean code to fetch.
+ * @param {string} [username] - Optional username for updating statistics.
+ * @returns {Promise<Product | null>} The product object or null if not found.
+ */
+export async function getProduct(
+  code: string,
+  username?: string
+): Promise<Product | null> {
+  try {
+    const res = await fetch(`${endpoints.products.get}`.replace("{id}", code), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        statistics: `prijzencheck,${username ?? ""}`,
+      },
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch product:", res.status, res.statusText);
+      return null;
+    }
+
+    const data = await res.json();
+    const product: Product = data as Product;
+    return product;
+  } catch (error) {
+    console.error("Failed to fetch product:", error);
+    return null;
+  }
 }

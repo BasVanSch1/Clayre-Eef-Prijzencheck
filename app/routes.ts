@@ -4,8 +4,7 @@ export default [
   index("routes/home.tsx"),
   route("product", "routes/layouts/product.tsx", [
     index("routes/productIndex.tsx"),
-    route(":productCode", "routes/product.tsx"),
-    route("ean/:eanCode", "routes/productEan.tsx"),
+    route(":code", "routes/product.tsx"),
   ]),
   route("products", "routes/products.tsx"),
   route("login", "routes/login.tsx"),

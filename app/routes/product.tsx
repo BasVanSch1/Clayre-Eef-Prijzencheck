@@ -1,4 +1,5 @@
 import ProductCard from "~/components/ProductCard";
+import type { Product, User } from "~/components/Types";
 import type { Route } from "./+types/product";
 import {
   isRouteErrorResponse,
@@ -6,7 +7,8 @@ import {
   useNavigation,
   useRouteError,
 } from "react-router";
-import { endpoints } from "~/globals";
+import { getProduct } from "~/services/productService.server";
+import { getUserFromSession } from "~/services/session.server";
 
 // Metadata like page title and description
 export function meta({}: Route.MetaArgs) {
@@ -49,32 +51,15 @@ export function ErrorBoundary() {
   );
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
-  const productCode: string = params.productCode;
-  if (!productCode) {
-    return null;
+export async function loader({ params, request }: Route.LoaderArgs) {
+  const user = await getUserFromSession(request);
+  const product = await getProduct(params.code, user?.username ?? undefined);
+
+  if (!product) {
+    throw new Response("Product not found", { status: 404 });
   }
 
-  const res = await fetch(
-    `${endpoints.products.get}`.replace("{id}", productCode)
-  );
-  // console.log(
-  //   `Fetching product with code: ${productCode}; Status: ${res.status}`
-  // );
-
-  if (!res.ok) {
-    switch (res.status) {
-      case 404:
-        throw new Response("Product not found", { status: 404 });
-      case 500:
-        throw new Response("Internal server error", { status: 500 });
-      default:
-        throw new Response("An error occurred while fetching the product", {
-          status: res.status,
-        });
-    }
-  }
-  return await res.json();
+  return { product };
 }
 
 export function ProductLoadingPlaceholder() {
@@ -98,7 +83,8 @@ export function NoProductSelected() {
 }
 
 export default function Product() {
-  const loaderData = useLoaderData() as Route.ComponentProps["loaderData"];
+  const loaderData = useLoaderData();
+  const product = loaderData.product as Product | null;
   const navigation = useNavigation();
 
   let isLoading = navigation.state === "loading";
@@ -111,13 +97,9 @@ export default function Product() {
     return <NoProductSelected />;
   }
 
-  return (
-    <ProductCard
-      productCode={loaderData.productCode}
-      description={loaderData.description}
-      price={loaderData.price}
-      imageUrl={loaderData.imageUrl}
-      eanCode={loaderData.eanCode}
-    />
-  );
+  if (!product) {
+    return ErrorBoundary();
+  }
+
+  return <ProductCard product={product} />;
 }

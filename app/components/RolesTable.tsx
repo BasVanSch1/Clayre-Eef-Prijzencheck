@@ -103,7 +103,7 @@ const RolesTable = ({ data }: RolesTableProps) => {
                 <td className={tdClassNames}>{role.name}</td>
                 <td className={tdClassNames}>{role.description}</td>
                 <td
-                  className={`${tdClassNames} hidden  md:flex md:flex-wrap gap-1`}
+                  className={`${tdClassNames} hidden md:flex md:flex-wrap gap-1`}
                 >
                   {role.permissions && role.permissions.length > 0 ? (
                     <>
@@ -122,7 +122,7 @@ const RolesTable = ({ data }: RolesTableProps) => {
                       )}
                     </>
                   ) : (
-                    "No permissions"
+                    <p className="text-xs">No permissions</p>
                   )}
                 </td>
               </tr>
