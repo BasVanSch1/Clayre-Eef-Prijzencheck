@@ -10,16 +10,25 @@ export type User = {
   permissions?: RolePermission[]; // Optional field so that I don't need to loop through roles to check permissions.
 };
 
+export type Product = {
+  productCode: string;
+  eanCode: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+};
+
 export type UserRole = {
   id: string;
   name: string;
   description?: string;
+  permissions?: RolePermission[];
 };
 
 export type RolePermission = {
   id: string;
   name: string;
-  description?: string;
+  description: string;
 };
 
 export type Statistics = {
