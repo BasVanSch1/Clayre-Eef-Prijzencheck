@@ -43,7 +43,7 @@ export default function Roles() {
   return (
     <>
       <>
-        <div className="grid grid-cols-1 grid-rows-[auto_1fr_1fr]">
+        <div className="grid grid-cols-1 grid-rows-[auto_auto_auto]">
           <Suspense fallback={<HydrateFallback />}>
             <Await resolve={roles}>
               {(roles) => <RolesTable data={roles} />}
