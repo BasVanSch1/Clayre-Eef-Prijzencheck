@@ -23,7 +23,10 @@ export default function Home() {
           Op deze website kun je gemakkelijk producten opzoeken. Er zijn drie
           methodes om een product op te zoeken; je scant een <b>ean-code</b>, je
           vult een <b>productcode</b> in of je zoekt het product in de{" "}
-          <NavLink to="products" className="text-blue-500">
+          <NavLink
+            to="products"
+            className="underline text-blue-600 visited:text-purple-600 hover:text-blue-800"
+          >
             productlijst
           </NavLink>
         </p>

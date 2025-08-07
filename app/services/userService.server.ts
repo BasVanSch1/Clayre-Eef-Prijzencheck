@@ -542,3 +542,31 @@ export async function getUsers(): Promise<User[]> {
     return [];
   }
 }
+
+export async function deleteUser(
+  userId: string
+): Promise<{ code: number; message?: string }> {
+  try {
+    const res = await fetch(
+      `${endpoints.user.delete}`.replace("{id}", userId),
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Failed to delete user:", await res.json());
+      return { code: res.status, message: res.statusText };
+    }
+
+    await fileStorage.remove(`${userId}-avatar`);
+
+    return { code: 204, message: "User deleted successfully." }; // No Content
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return { code: 500, message: `${error}` }; // Internal Server Error
+  }
+}
