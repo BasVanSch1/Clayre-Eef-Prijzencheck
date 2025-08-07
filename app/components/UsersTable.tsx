@@ -1,12 +1,20 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import type { User } from "./Types";
+import {
+  SearchIconInput,
+  UserPlusIcon,
+  UserPlusIconInput,
+  UserXIcon,
+} from "./Icons";
 
 interface UsersTableProps {
   data?: User[] | undefined | null;
+  addUser?: boolean;
+  removeUser?: boolean;
 }
 
-const UsersTable = ({ data }: UsersTableProps) => {
+const UsersTable = ({ data, addUser, removeUser }: UsersTableProps) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -31,8 +39,21 @@ const UsersTable = ({ data }: UsersTableProps) => {
     );
   });
 
-  function navigateToUser(userId: string) {
+  function navigateToUser(
+    event: React.MouseEvent<HTMLElement>,
+    userId: string
+  ) {
     if (!userId) {
+      return;
+    }
+
+    // Prevent navigation if the click is on a link/icon
+    const target = event.target as HTMLElement;
+    if (
+      target.tagName === "a" ||
+      target.tagName === "svg" ||
+      target.tagName === "path"
+    ) {
       return;
     }
 
@@ -43,21 +64,7 @@ const UsersTable = ({ data }: UsersTableProps) => {
     <>
       <div className="relative row-start-1 col-start-1">
         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
-          <svg
-            className="h-4 w-4 text-gray-500"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 20 20"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-            />
-          </svg>
+          <SearchIconInput />
         </div>
 
         <input
@@ -70,9 +77,24 @@ const UsersTable = ({ data }: UsersTableProps) => {
         />
       </div>
 
-      <table className="row-start-2 col-start-1">
+      {addUser && (
+        <div className="row-start-2 col-start-1 flex">
+          <NavLink
+            to="/maintenance/users/new"
+            className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-1 text-sm md:text-base text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
+          >
+            <span className="flex items-center gap-1">
+              <UserPlusIcon className="h-4.5 w-4.5 me-1" />
+              New User
+            </span>
+          </NavLink>
+        </div>
+      )}
+
+      <table className="row-start-3 col-start-1">
         <thead>
           <tr>
+            {removeUser && <th scope="col" className={thClassNames}></th>}
             <th scope="col" className={thClassNames}>
               Name
             </th>
@@ -103,8 +125,19 @@ const UsersTable = ({ data }: UsersTableProps) => {
               <tr
                 key={user.id}
                 className="hover:bg-gray-200 dark:hover:bg-neutral-800 cursor-pointer"
-                onClick={() => navigateToUser(user.id)}
+                onClick={(e) => navigateToUser(e, user.id)}
               >
+                {removeUser && (
+                  <td className="w-0">
+                    <NavLink
+                      key="delete-${user.id}"
+                      to={`/maintenance/users/${user.id}/delete`}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <UserXIcon className="h-4.5 w-4.5" />
+                    </NavLink>
+                  </td>
+                )}
                 <td className={tdClassNames}>{user.name}</td>
                 <td className={tdClassNames}>{user.username}</td>
                 <td className={tdClassNames}>{user.email}</td>

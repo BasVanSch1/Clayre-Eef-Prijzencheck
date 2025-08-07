@@ -22,9 +22,17 @@ export async function loader({ request }: Route.LoaderArgs) {
     request,
     "prijzencheck.pages.maintenance.users"
   );
+
+  const canAddUser = user.permissions?.some(
+    (perm) => perm.name === "prijzencheck.pages.maintenance.users.create"
+  );
+  const canRemoveUser = user.permissions?.some(
+    (perm) => perm.name === "prijzencheck.pages.maintenance.users.delete"
+  );
+
   const users = await getUsers();
 
-  return { users };
+  return { users, canAddUser, canRemoveUser };
 }
 
 export function HydrateFallback() {
@@ -39,12 +47,20 @@ export function HydrateFallback() {
 
 export default function Users() {
   const users = useLoaderData().users as User[];
+  const canAddUser = useLoaderData().canAddUser as boolean;
+  const canRemoveUser = useLoaderData().canRemoveUser as boolean;
   return (
     <>
-      <div className="grid grid-cols-1 grid-rows-[auto_1fr_1fr]">
+      <div className="grid grid-cols-1 grid-rows-[auto_auto_auto]">
         <Suspense fallback={<HydrateFallback />}>
           <Await resolve={users}>
-            {(users) => <UsersTable data={users} />}
+            {(users) => (
+              <UsersTable
+                data={users}
+                addUser={canAddUser}
+                removeUser={canRemoveUser}
+              />
+            )}
           </Await>
         </Suspense>
       </div>

@@ -68,7 +68,7 @@ export default function Maintenance() {
 
   return (
     <div className="col-start-3 row-start-3 flex flex-col mt-5 w-[80vw]">
-      <div className="grid grid-cols-1 grid-rows-[auto_1fr] md:grid-rows-2 md:grid-cols-[15vw_1fr] md:grid-rows-1 gap-x-2 gap-y-2 ">
+      <div className="grid grid-cols-1 grid-rows-[auto_1fr] md:grid-rows-1 md:grid-cols-[15vw_1fr] md:grid-rows-1 gap-x-2 gap-y-2 ">
         <div className="flex md:flex-col justify-evenly md:justify-start col-start-1 row-start-1 bg-gray-800 rounded-lg shadow-md">
           {navigation.map(
             (item: { name: string; href: string; children: any[] }) => (
