@@ -91,7 +91,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
           <header className="bg-white shadow-sm dark:bg-neutral-700">
             <div className="mx-auto max-w-7xl px-4 py-3 sm:px-3 lg:px-5">
-              <h1 className="text-lg font-bold tracking-tight text-gray-900 dark:text-neutral-300">
+              <h1 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-neutral-300">
                 {pageTitle}
               </h1>
             </div>
