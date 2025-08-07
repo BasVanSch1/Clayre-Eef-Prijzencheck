@@ -19,7 +19,7 @@ export type Product = {
 };
 
 export type UserRole = {
-  id: string;
+  id?: string;
   name: string;
   description?: string;
   permissions?: RolePermission[];

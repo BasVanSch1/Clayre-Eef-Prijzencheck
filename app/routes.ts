@@ -16,6 +16,7 @@ export default [
     route("roles", "routes/maintenance/roles.tsx"),
     route("users", "routes/maintenance/users.tsx"),
     route("users/:id", "routes/maintenance/users/userDetails.tsx"),
+    route("users/new", "routes/maintenance/users/newUser.tsx"),
     route("products", "routes/maintenance/products.tsx"),
   ]),
 ] satisfies RouteConfig;

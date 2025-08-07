@@ -220,6 +220,174 @@ export async function updateUserPassword(
   }
 }
 
+export async function createUser(
+  formData: FormData
+): Promise<{ code: number; message?: string; fields?: string[] }> {
+  const image = formData.get("profileImage") as File | null;
+  const username = formData.get("username") as string | null;
+  let displayName = formData.get("displayName") as string | null;
+  const email = formData.get("email") as string | null;
+  const confirmEmail = formData.get("confirmEmail") as string | null;
+  const password = formData.get("password") as string | null;
+  const confirmPassword = formData.get("confirmPassword") as string | null;
+  const roles = formData.get("_roles") as string | null;
+  const rolesArray = [] as UserRole[];
+
+  if (!username || username.trim() === "") {
+    return {
+      code: 400,
+      message: "Username is required.",
+      fields: ["username"],
+    };
+  }
+
+  if (!displayName || displayName.trim() === "") {
+    displayName = null; // displayName can be null, the API will set it to the value of the username.
+  }
+
+  if (!email || email.trim() === "") {
+    return { code: 400, message: "Email is required.", fields: ["email"] };
+  }
+
+  if (!confirmEmail || confirmEmail.trim() === "") {
+    return {
+      code: 400,
+      message: "Confirm email is required.",
+      fields: ["confirmEmail"],
+    };
+  }
+
+  if (email !== confirmEmail) {
+    return {
+      code: 400,
+      message: "Email and confirmation do not match.",
+      fields: ["email", "confirmEmail"],
+    };
+  }
+
+  if (!validator.isEmail(email)) {
+    return { code: 400, message: "Invalid email.", fields: ["email"] };
+  }
+
+  if (!password || password.trim() === "") {
+    return {
+      code: 400,
+      message: "Password is required.",
+      fields: ["password"],
+    };
+  }
+
+  if (!confirmPassword || confirmPassword.trim() === "") {
+    return {
+      code: 400,
+      message: "Confirm password is required.",
+      fields: ["confirmPassword"],
+    };
+  }
+
+  if (password.length < 4) {
+    return {
+      code: 400,
+      message: "Password must be at least 4 characters long.",
+      fields: ["password"],
+    };
+  }
+
+  if (password !== confirmPassword) {
+    return {
+      code: 400,
+      message: "Password and confirmation do not match.",
+      fields: ["password", "confirmPassword"],
+    };
+  }
+
+  if (image && image instanceof File && image.size > 0) {
+    if (image.size > 5 * 1024 * 1024) {
+      return {
+        code: 400,
+        message: "Image size exceeds 5MB limit.",
+        fields: ["profileImage"],
+      };
+    }
+    if (!["image/jpeg", "image/png"].includes(image.type)) {
+      return {
+        code: 400,
+        message: "Invalid image format. Only JPEG and PNG are allowed.",
+        fields: ["profileImage"],
+      };
+    }
+
+    await fileStorage.set(`${username}-avatar`, image);
+  }
+
+  if (roles && roles.trim() !== "") {
+    const rolesArrayString = roles.split(",");
+    for (const role of rolesArrayString) {
+      if (role.trim() !== "") {
+        rolesArray.push({
+          name: role.trim(),
+        });
+      }
+    }
+  }
+
+  const userData = {
+    username: username,
+    displayName: displayName,
+    email: email,
+    passwordHash: password,
+    roles: rolesArray,
+  };
+
+  try {
+    const res = await fetch(endpoints.user.create, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!res.ok) {
+      const response = await res.json();
+
+      if (res.status === 409) {
+        console.log("Failed to create user:", response.status, res.statusText);
+        const message = response.message.toLowerCase();
+        if (message.includes("username")) {
+          return {
+            code: response.code,
+            message: response.message || "Username already exists.",
+            fields: ["username"],
+          };
+        } else if (message.includes("email")) {
+          return {
+            code: response.code,
+            message: response.message || "Email already exists.",
+            fields: ["email"],
+          };
+        }
+
+        return {
+          code: response.code,
+          message: response.message,
+        };
+      }
+
+      console.log("Failed to create user:", response.status, res.statusText);
+      return { code: response.code, message: response.message };
+    }
+
+    return {
+      code: 201,
+      message: "User created successfully.",
+    };
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return { code: 500, message: `${error}` }; // Internal Server Error
+  }
+}
+
 /**
  * Retrieves the permissions assigned to a user.
  * Fetches permissions from the backend and returns them as an array of RolePermission objects.
