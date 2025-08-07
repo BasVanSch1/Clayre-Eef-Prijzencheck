@@ -1,4 +1,4 @@
-import { ProductIcon, SearchIcon, UserIcon } from "~/components/Icons";
+import { ProductIcon, SearchIconAlt, UsersIcon } from "~/components/Icons";
 import { useLoaderData } from "react-router";
 import type { Statistics } from "~/components/Types";
 import { getStatistics } from "~/services/statistics.server";
@@ -42,7 +42,7 @@ export default function Statistics() {
 
         <div className="col-start-2 row-start-1 flex flex-col bg-gradient-to-t from-teal-300/80 from-5% via-teal-300 to-teal-300/80 to-95% rounded-xl shadow-md w-full md:flex-grow">
           <div className="flex flex-col items-center justify-center border-b-1 border-teal-400/60 mt-2 p-2 shadow">
-            <SearchIcon width="40" height="40" />
+            <SearchIconAlt width="40" height="40" />
             <h2 className="text-gray-700 text-lg font-semibold text-center">
               Lookups
             </h2>
@@ -54,7 +54,7 @@ export default function Statistics() {
 
         <div className="col-start-3 row-start-1 flex flex-col bg-gradient-to-t from-amber-200/80 from-5% via-amber-200 to-amber-200/80 to-95% rounded-xl shadow-md w-full md:flex-grow">
           <div className="flex flex-col items-center justify-center border-b-1 border-amber-400/60 mt-2 p-2 shadow">
-            <UserIcon width="40" height="40" />
+            <UsersIcon width="40" height="40" />
             <h2 className="text-gray-700 text-lg font-semibold text-center">
               Users
             </h2>
@@ -67,7 +67,7 @@ export default function Statistics() {
         {/* Statistic Panels row 2*/}
         <div className="col-start-2 row-start-2 flex flex-col bg-gradient-to-t from-teal-300/80 from-5% via-teal-300 to-teal-300/80 to-95% rounded-xl shadow-md w-full md:flex-grow">
           <div className="flex flex-col items-center justify-center border-b-1 border-teal-400/60 mt-2 p-2 shadow">
-            <SearchIcon width="40" height="40" />
+            <SearchIconAlt width="40" height="40" />
             <h2 className="text-gray-700 text-lg font-semibold text-center">
               By EAN
             </h2>
@@ -80,7 +80,7 @@ export default function Statistics() {
         {/* Statistic Panels row 3*/}
         <div className="col-start-2 row-start-3 flex flex-col bg-gradient-to-t from-teal-300/80 from-5% via-teal-300 to-teal-300/80 to-95% rounded-xl shadow-md w-full md:flex-grow">
           <div className="flex flex-col items-center justify-center border-b-1 border-teal-400/60 mt-2 p-2 shadow">
-            <SearchIcon width="40" height="40" />
+            <SearchIconAlt width="40" height="40" />
             <h2 className="text-gray-700 text-lg font-semibold text-center">
               By code
             </h2>

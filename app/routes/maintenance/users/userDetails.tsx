@@ -8,12 +8,22 @@ import {
   useLoaderData,
   useNavigation,
 } from "react-router";
-import type { Statistics, User } from "~/components/Types";
+import type { Statistics, User, UserRole } from "~/components/Types";
 import { useEffect, useState } from "react";
 import validator from "validator";
-import { DefaultProfileImage, SearchIconInput } from "~/components/Icons";
+import {
+  DefaultProfileImage,
+  HashIconInput,
+  IdCardIconInput,
+  KeyIconInput,
+  MailCheckIconInput,
+  MailIconInput,
+  SearchIconInput,
+  UserIconInput,
+} from "~/components/Icons";
 import { classNames } from "~/root";
 import { fileStorage } from "~/services/filestorage.server";
+import { getRoles } from "~/services/rolesService.server";
 
 export const handle = {
   title: "Maintenance > Users > User Details",
@@ -46,7 +56,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   user.avatar = await fileStorage.get(`${user.id}-avatar`);
   user.avatarVersion = Date.now();
 
-  return { user, stats };
+  const roles = await getRoles();
+
+  return { user, stats, roles };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -73,7 +85,8 @@ export async function action({ request }: Route.ActionArgs) {
       user.name === formData.get("displayName") &&
       (user.email === formData.get("newEmail") ||
         formData.get("newEmail") === "") &&
-      (image === null || image.size === 0)
+      (image === null || image.size === 0) &&
+      formData.get("_roles") === user.roles?.map((r) => r.name).join(",")
     ) {
       return {
         code: 400,
@@ -124,8 +137,9 @@ export default function UserDetails() {
   const loaderData = useLoaderData();
   const user: User = loaderData.user;
   const stats: Statistics = loaderData.stats;
-
+  const existingRoles: UserRole[] = loaderData.roles;
   const [file, setFile] = useState<string | null>();
+  const [roles, setRoles] = useState<string[]>([]);
 
   const actionData = useActionData<{
     code: number;
@@ -189,6 +203,12 @@ export default function UserDetails() {
     }
   }, [actionData]);
 
+  useEffect(() => {
+    if (user.roles && user.roles.length > 0) {
+      setRoles(user.roles.map((role) => role.name));
+    }
+  }, [user.roles]);
+
   return (
     <>
       <div>
@@ -248,24 +268,30 @@ export default function UserDetails() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Username
                   </label>
-                  <input
-                    type="text"
-                    name="username"
-                    defaultValue={user.username}
-                    className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
-                  />
+                  <div className="relative">
+                    <UserIconInput />
+                    <input
+                      type="text"
+                      name="username"
+                      defaultValue={user.username}
+                      className="ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Display name
                   </label>
-                  <input
-                    type="text"
-                    name="displayName"
-                    defaultValue={user.name}
-                    className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
-                  />
+                  <div className="relative">
+                    <IdCardIconInput />
+                    <input
+                      type="text"
+                      name="displayName"
+                      defaultValue={user.name}
+                      className="ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -273,13 +299,16 @@ export default function UserDetails() {
                 <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                   Email address
                 </label>
-                <input
-                  type="text"
-                  name="email"
-                  defaultValue={user.email}
-                  className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base text-gray-700 transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
-                  readOnly
-                />
+                <div className="relative">
+                  <MailIconInput />
+                  <input
+                    type="text"
+                    name="email"
+                    defaultValue={user.email}
+                    className="ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base text-gray-700 transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    readOnly
+                  />
+                </div>
               </div>
 
               <div className="flex md:gap-2 flex-col md:flex-row">
@@ -287,20 +316,23 @@ export default function UserDetails() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     New email address
                   </label>
-                  <input
-                    type="text"
-                    name="newEmail"
-                    placeholder="New email address"
-                    onChange={handleValidateEmail}
-                    className={classNames(
-                      "p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) =>
-                        error.fields?.includes("newEmail")
-                      )
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                  />
+                  <div className="relative">
+                    <MailIconInput />
+                    <input
+                      type="text"
+                      name="newEmail"
+                      placeholder="New email address"
+                      onChange={handleValidateEmail}
+                      className={classNames(
+                        "ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("newEmail")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("newEmail")
                   ) && (
@@ -317,20 +349,23 @@ export default function UserDetails() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Confirm email address
                   </label>
-                  <input
-                    type="text"
-                    name="confirmEmail"
-                    placeholder="Confirm email address"
-                    onChange={handleValidateEmail}
-                    className={classNames(
-                      "p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 transition-colors duration-200 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) =>
-                        error.fields?.includes("confirmEmail")
-                      )
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                  />
+                  <div className="relative">
+                    <MailCheckIconInput />
+                    <input
+                      type="text"
+                      name="confirmEmail"
+                      placeholder="Confirm email address"
+                      onChange={handleValidateEmail}
+                      className={classNames(
+                        "ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 transition-colors duration-200 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("confirmEmail")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("confirmEmail")
                   ) && (
@@ -342,6 +377,84 @@ export default function UserDetails() {
                       }
                     </p>
                   )}
+                </div>
+              </div>
+
+              <div className="flex md:gap-2 flex-col md:flex-row">
+                <div className="w-[25vw] md:w-[20vw]">
+                  <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
+                    Roles
+                  </label>
+                  <div className="flex flex-col md:flex-row flex-wrap gap-1">
+                    {roles && roles.length > 0 ? (
+                      roles.map((role) => (
+                        <p
+                          key={role}
+                          className="border border-blue-400 rounded-md shadow-md bg-blue-300 text-sm p-1 dark:bg-purple-700 dark:border-purple-700 dark:text-neutral-300"
+                        >
+                          {role}
+                          <span
+                            className="ml-1 cursor-pointer text-black rounded-full hover:text-red-500 transition-colors duration-200"
+                            onClick={() =>
+                              setRoles((prevRoles) =>
+                                prevRoles.filter((r) => r !== role)
+                              )
+                            }
+                          >
+                            &times;
+                          </span>
+                        </p>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-sm dark:text-neutral-300">
+                        No roles assigned
+                      </p>
+                    )}
+                  </div>
+                  {feedback.find((error) =>
+                    error.fields?.includes("roles")
+                  ) && (
+                    <p className="text-red-600 text-xs md:text-sm">
+                      {
+                        feedback.find((error) =>
+                          error.fields?.includes("roles")
+                        )?.message
+                      }
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
+                    Add role
+                  </label>
+                  <select
+                    className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 transition-colors duration-200 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    name="addRole"
+                    onChange={(e) => {
+                      const selectedRole = e.target.value;
+                      if (selectedRole && !roles.includes(selectedRole)) {
+                        setRoles((prevRoles) => [...prevRoles, selectedRole]);
+                      }
+                      e.target.selectedIndex = 0;
+                    }}
+                  >
+                    <option value="">Select a role</option>
+                    {existingRoles.filter(
+                      (role: UserRole) => !roles.includes(role.name)
+                    ).length > 0 ? (
+                      existingRoles
+                        .filter((role: UserRole) => !roles.includes(role.name))
+                        .map((role: UserRole) => (
+                          <option key={role.id} value={role.name}>
+                            {role.name}
+                          </option>
+                        ))
+                    ) : (
+                      <option value="" disabled>
+                        No roles available
+                      </option>
+                    )}
+                  </select>
                 </div>
               </div>
 
@@ -375,6 +488,7 @@ export default function UserDetails() {
                 )}
               </div>
 
+              <input type="hidden" name="_roles" value={roles.join(",")} />
               <input type="hidden" name="_action" value="updateUserSettings" />
             </Form>
           </div>
@@ -388,20 +502,23 @@ export default function UserDetails() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     New password
                   </label>
-                  <input
-                    type="password"
-                    name="newPassword"
-                    placeholder="New password"
-                    className={classNames(
-                      "p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) =>
-                        error.fields?.includes("newPassword")
-                      )
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                    required
-                  />
+                  <div className="relative">
+                    <KeyIconInput />
+                    <input
+                      type="password"
+                      name="newPassword"
+                      placeholder="New password"
+                      className={classNames(
+                        "ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("newPassword")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                      required
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("newPassword")
                   ) && (
@@ -419,20 +536,23 @@ export default function UserDetails() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Confirm password
                   </label>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="Confirm password"
-                    className={classNames(
-                      "p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) =>
-                        error.fields?.includes("confirmNewPassword")
-                      )
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                    required
-                  />
+                  <div className="relative">
+                    <KeyIconInput />
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      placeholder="Confirm password"
+                      className={classNames(
+                        "ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("confirmNewPassword")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                      required
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("confirmNewPassword")
                   ) && (
@@ -490,13 +610,16 @@ export default function UserDetails() {
                 <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                   User ID
                 </label>
-                <input
-                  type="text"
-                  name="userId"
-                  defaultValue={user.id}
-                  className="p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
-                  readOnly
-                />
+                <div className="relative">
+                  <HashIconInput />
+                  <input
+                    type="text"
+                    name="userId"
+                    defaultValue={user.id}
+                    className="ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    readOnly
+                  />
+                </div>
               </div>
 
               <div>

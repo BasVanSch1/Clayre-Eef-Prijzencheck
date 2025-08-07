@@ -21,6 +21,8 @@ export async function updateUserSettings(
   let username = formData.get("username") as string | null;
   const confirmEmail = formData.get("confirmEmail") as string;
   let newImage = formData.get("profileImage") as File | null;
+  const roles = formData.get("_roles") as string | null;
+  let rolesArray: UserRole[] = [];
 
   if (newImage && newImage instanceof File && newImage.size > 0) {
     if (newImage.size > 5 * 1024 * 1024) {
@@ -69,6 +71,17 @@ export async function updateUserSettings(
     };
   }
 
+  if (admin && roles && roles.trim() !== "") {
+    const rolesArrayString = roles.split(",");
+    for (const role of rolesArrayString) {
+      if (role.trim() !== "") {
+        rolesArray.push({
+          name: role.trim(),
+        });
+      }
+    }
+  }
+
   const formattedBody =
     "[" +
     (displayName
@@ -79,6 +92,11 @@ export async function updateUserSettings(
       : "") +
     (admin && username
       ? `{"op": "replace", "path": "/userName", "value": "${username}"},`
+      : "") +
+    (admin
+      ? `{"op": "replace", "path": "/roles", "value": ${JSON.stringify(
+          rolesArray
+        )}},`
       : "") +
     "]";
 
@@ -316,8 +334,6 @@ export async function createUser(
         fields: ["profileImage"],
       };
     }
-
-    await fileStorage.set(`${username}-avatar`, image);
   }
 
   if (roles && roles.trim() !== "") {
@@ -348,9 +364,9 @@ export async function createUser(
       body: JSON.stringify(userData),
     });
 
-    if (!res.ok) {
-      const response = await res.json();
+    const response = await res.json();
 
+    if (!res.ok) {
       if (res.status === 409) {
         console.log("Failed to create user:", response.status, res.statusText);
         const message = response.message.toLowerCase();
@@ -376,6 +392,10 @@ export async function createUser(
 
       console.log("Failed to create user:", response.status, res.statusText);
       return { code: response.code, message: response.message };
+    }
+
+    if (image && image instanceof File && image.size > 0) {
+      await fileStorage.set(`${response.userId}-avatar`, image);
     }
 
     return {

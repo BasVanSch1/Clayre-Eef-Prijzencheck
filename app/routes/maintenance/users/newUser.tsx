@@ -9,7 +9,15 @@ import {
 } from "react-router";
 import { useState, useEffect } from "react";
 import validator from "validator";
-import { DefaultProfileImage, SearchIconInput } from "~/components/Icons";
+import {
+  DefaultProfileImage,
+  IdCardIconInput,
+  KeyIconInput,
+  MailCheckIconInput,
+  MailIconInput,
+  SearchIconInput,
+  UserIconInput,
+} from "~/components/Icons";
 import { classNames } from "~/root";
 import { createUser } from "~/services/userService.server";
 import { getRoles } from "~/services/rolesService.server";
@@ -160,14 +168,11 @@ export default function NewUser() {
               encType="multipart/form-data"
             >
               <div className="flex gap-5">
-                {file && file.size > 0 ? (
+                {file ? (
                   <img
                     src={URL.createObjectURL(file)}
                     alt="Profile Avatar"
-                    className={classNames(
-                      file ? "hidden" : "",
-                      "size-25 rounded-md border shadow-md"
-                    )}
+                    className="size-25 rounded-md border shadow-md"
                   ></img>
                 ) : (
                   <div className={classNames(file ? "hidden" : "")}>
@@ -201,19 +206,22 @@ export default function NewUser() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Username
                   </label>
-                  <input
-                    type="text"
-                    name="username"
-                    placeholder="Username"
-                    className={classNames(
-                      "p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) =>
-                        error.fields?.includes("username")
-                      )
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                  />
+                  <div className="relative">
+                    <UserIconInput />
+                    <input
+                      type="text"
+                      name="username"
+                      placeholder="Username"
+                      className={classNames(
+                        "ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("username")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("username")
                   ) && (
@@ -231,12 +239,15 @@ export default function NewUser() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Display name
                   </label>
-                  <input
-                    type="text"
-                    name="displayName"
-                    placeholder="Display name"
-                    className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
-                  />
+                  <div className="relative">
+                    <IdCardIconInput />
+                    <input
+                      type="text"
+                      name="displayName"
+                      placeholder="Display name"
+                      className="ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -245,18 +256,23 @@ export default function NewUser() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     New email address
                   </label>
-                  <input
-                    type="text"
-                    name="email"
-                    placeholder="Email address"
-                    onChange={handleValidateEmail}
-                    className={classNames(
-                      "p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) => error.fields?.includes("email"))
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                  />
+                  <div className="relative">
+                    <MailIconInput />
+                    <input
+                      type="text"
+                      name="email"
+                      placeholder="Email address"
+                      onChange={handleValidateEmail}
+                      className={classNames(
+                        "ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("email")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("email")
                   ) && (
@@ -273,20 +289,23 @@ export default function NewUser() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Confirm email address
                   </label>
-                  <input
-                    type="text"
-                    name="confirmEmail"
-                    placeholder="Confirm email address"
-                    onChange={handleValidateEmail}
-                    className={classNames(
-                      "p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 transition-colors duration-200 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) =>
-                        error.fields?.includes("confirmEmail")
-                      )
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                  />
+                  <div className="relative">
+                    <MailCheckIconInput />
+                    <input
+                      type="text"
+                      name="confirmEmail"
+                      placeholder="Confirm email address"
+                      onChange={handleValidateEmail}
+                      className={classNames(
+                        "ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 transition-colors duration-200 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("confirmEmail")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("confirmEmail")
                   ) && (
@@ -306,20 +325,23 @@ export default function NewUser() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Password
                   </label>
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    onChange={handleValidatePassword}
-                    className={classNames(
-                      "p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 transition-colors duration-200 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) =>
-                        error.fields?.includes("password")
-                      )
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                  />
+                  <div className="relative">
+                    <KeyIconInput />
+                    <input
+                      type="password"
+                      name="password"
+                      placeholder="Password"
+                      onChange={handleValidatePassword}
+                      className={classNames(
+                        "ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 transition-colors duration-200 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("password")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("password")
                   ) && (
@@ -337,20 +359,23 @@ export default function NewUser() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Confirm Password
                   </label>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="Confirm password"
-                    onChange={handleValidatePassword}
-                    className={classNames(
-                      "p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 transition-colors duration-200 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) =>
-                        error.fields?.includes("confirmPassword")
-                      )
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                  />
+                  <div className="relative">
+                    <KeyIconInput />
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      placeholder="Confirm password"
+                      onChange={handleValidatePassword}
+                      className={classNames(
+                        "ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 transition-colors duration-200 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("confirmPassword")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("confirmPassword")
                   ) && (
@@ -391,8 +416,8 @@ export default function NewUser() {
                         </p>
                       ))
                     ) : (
-                      <p className="text-xs md:text-sm dark:text-neutral-300">
-                        no roles
+                      <p className="text-gray-500 text-sm dark:text-neutral-300">
+                        No roles assigned
                       </p>
                     )}
                   </div>

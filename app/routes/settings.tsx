@@ -7,7 +7,16 @@ import {
   useLoaderData,
   useNavigation,
 } from "react-router";
-import { DefaultProfileImage, SearchIconInput } from "~/components/Icons";
+import {
+  DefaultProfileImage,
+  HashIconInput,
+  IdCardIconInput,
+  KeyIconInput,
+  MailCheckIconInput,
+  MailIconInput,
+  SearchIconInput,
+  UserIconInput,
+} from "~/components/Icons";
 import type { Statistics, User } from "~/components/Types";
 import { classNames } from "~/root";
 import validator from "validator";
@@ -266,25 +275,31 @@ export default function Settings() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Username
                   </label>
-                  <input
-                    type="text"
-                    name="username"
-                    defaultValue={user.username}
-                    className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base text-gray-700 transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
-                    readOnly
-                  />
+                  <div className="relative">
+                    <UserIconInput />
+                    <input
+                      type="text"
+                      name="username"
+                      defaultValue={user.username}
+                      className="ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base text-gray-700 transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                      readOnly
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Display name
                   </label>
-                  <input
-                    type="text"
-                    name="displayName"
-                    defaultValue={user.name}
-                    className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
-                  />
+                  <div className="relative">
+                    <IdCardIconInput />
+                    <input
+                      type="text"
+                      name="displayName"
+                      defaultValue={user.name}
+                      className="ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -292,13 +307,16 @@ export default function Settings() {
                 <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                   Email address
                 </label>
-                <input
-                  type="text"
-                  name="email"
-                  defaultValue={user.email}
-                  className="p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base text-gray-700 transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
-                  readOnly
-                />
+                <div className="relative">
+                  <MailIconInput />
+                  <input
+                    type="text"
+                    name="email"
+                    defaultValue={user.email}
+                    className="ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base text-gray-700 transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    readOnly
+                  />
+                </div>
               </div>
 
               <div className="flex md:gap-2 flex-col md:flex-row">
@@ -306,20 +324,23 @@ export default function Settings() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     New email address
                   </label>
-                  <input
-                    type="text"
-                    name="newEmail"
-                    placeholder="New email address"
-                    onChange={handleValidateEmail}
-                    className={classNames(
-                      "p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) =>
-                        error.fields?.includes("newEmail")
-                      )
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                  />
+                  <div className="relative">
+                    <MailIconInput />
+                    <input
+                      type="text"
+                      name="newEmail"
+                      placeholder="New email address"
+                      onChange={handleValidateEmail}
+                      className={classNames(
+                        "ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("newEmail")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("newEmail")
                   ) && (
@@ -336,20 +357,23 @@ export default function Settings() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Confirm email address
                   </label>
-                  <input
-                    type="text"
-                    name="confirmEmail"
-                    placeholder="Confirm email address"
-                    onChange={handleValidateEmail}
-                    className={classNames(
-                      "p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 transition-colors duration-200 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) =>
-                        error.fields?.includes("confirmEmail")
-                      )
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                  />
+                  <div className="relative">
+                    <MailCheckIconInput />
+                    <input
+                      type="text"
+                      name="confirmEmail"
+                      placeholder="Confirm email address"
+                      onChange={handleValidateEmail}
+                      className={classNames(
+                        "ps-10 p-2 mb-1 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base bg-white dark:border-neutral-600 transition-colors duration-200 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("confirmEmail")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("confirmEmail")
                   ) && (
@@ -413,20 +437,23 @@ export default function Settings() {
               <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                 Current password
               </label>
-              <input
-                type="password"
-                name="currentPassword"
-                placeholder="Current Password"
-                className={classNames(
-                  "p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                  feedback.find((error) =>
-                    error.fields?.includes("currentPassword")
-                  )
-                    ? "focus:outline-0 border-red-500"
-                    : ""
-                )}
-                required
-              />
+              <div className="relative">
+                <KeyIconInput />
+                <input
+                  type="password"
+                  name="currentPassword"
+                  placeholder="Current Password"
+                  className={classNames(
+                    "ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                    feedback.find((error) =>
+                      error.fields?.includes("currentPassword")
+                    )
+                      ? "focus:outline-0 border-red-500"
+                      : ""
+                  )}
+                  required
+                />
+              </div>
               {feedback.find((error) =>
                 error.fields?.includes("currentPassword")
               ) && (
@@ -444,20 +471,23 @@ export default function Settings() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     New password
                   </label>
-                  <input
-                    type="password"
-                    name="newPassword"
-                    placeholder="New password"
-                    className={classNames(
-                      "p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) =>
-                        error.fields?.includes("newPassword")
-                      )
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                    required
-                  />
+                  <div className="relative">
+                    <KeyIconInput />
+                    <input
+                      type="password"
+                      name="newPassword"
+                      placeholder="New password"
+                      className={classNames(
+                        "ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("newPassword")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                      required
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("newPassword")
                   ) && (
@@ -475,20 +505,23 @@ export default function Settings() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Confirm password
                   </label>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="Confirm password"
-                    className={classNames(
-                      "p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
-                      feedback.find((error) =>
-                        error.fields?.includes("confirmNewPassword")
-                      )
-                        ? "focus:outline-0 border-red-500"
-                        : ""
-                    )}
-                    required
-                  />
+                  <div className="relative">
+                    <KeyIconInput />
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      placeholder="Confirm password"
+                      className={classNames(
+                        "ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] bg-white text-sm md:text-base transition-colors duration-200 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500",
+                        feedback.find((error) =>
+                          error.fields?.includes("confirmNewPassword")
+                        )
+                          ? "focus:outline-0 border-red-500"
+                          : ""
+                      )}
+                      required
+                    />
+                  </div>
                   {feedback.find((error) =>
                     error.fields?.includes("confirmNewPassword")
                   ) && (
@@ -556,13 +589,16 @@ export default function Settings() {
                 <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                   User ID
                 </label>
-                <input
-                  type="text"
-                  name="userId"
-                  defaultValue={user.id}
-                  className="p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
-                  readOnly
-                />
+                <div className="relative">
+                  <HashIconInput />
+                  <input
+                    type="text"
+                    name="userId"
+                    defaultValue={user.id}
+                    className="ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    readOnly
+                  />
+                </div>
               </div>
 
               <div>

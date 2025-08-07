@@ -1,34 +1,35 @@
 import { classNames } from "~/root";
 
-interface DefaultProfileImageProps {
+interface IconProps {
   width?: string;
   height?: string;
   className?: string;
 }
 
-interface ProductIconProps {
-  width?: string;
-  height?: string;
-  className?: string;
-}
+// export const Icon: React.FC<IconProps> = ({
+//   width = "800px",
+//   height = "800px",
+//   className = "",
+// }) => {
+//   return (
 
-interface UserIconProps {
-  width?: string;
-  height?: string;
-  className?: string;
-}
+//   );
+// };
 
-interface SearchIconProps {
-  width?: string;
-  height?: string;
-  className?: string;
-}
+// export const IconInput: React.FC<IconProps> = ({ className = "" }) => {
+//   return (
+//     <div
+//       className={classNames(
+//         className,
+//         "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+//       )}
+//     >
+//       <Icon height="" width="" className="h-4 w-4 text-gray-500" />
+//     </div>
+//   );
+// };
 
-interface SearchIconInputProps {
-  className?: string;
-}
-
-export const DefaultProfileImage: React.FC<DefaultProfileImageProps> = ({
+export const DefaultProfileImage: React.FC<IconProps> = ({
   width = "100",
   height = "100",
   className = "",
@@ -58,7 +59,7 @@ export const DefaultProfileImage: React.FC<DefaultProfileImageProps> = ({
   );
 };
 
-export const ProductIcon: React.FC<ProductIconProps> = ({
+export const ProductIcon: React.FC<IconProps> = ({
   width = "800px",
   height = "800px",
   className = "",
@@ -134,7 +135,7 @@ export const ProductIcon: React.FC<ProductIconProps> = ({
   );
 };
 
-export const UserIcon: React.FC<UserIconProps> = ({
+export const UsersIcon: React.FC<IconProps> = ({
   width = "800px",
   height = "800px",
   className = "",
@@ -176,19 +177,71 @@ export const UserIcon: React.FC<UserIconProps> = ({
   );
 };
 
-export const SearchIcon: React.FC<SearchIconProps> = ({
+export const UsersIconInput: React.FC<IconProps> = ({ className = "" }) => {
+  return (
+    <div
+      className={classNames(
+        className,
+        "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+      )}
+    >
+      <UsersIcon height="" width="" className="h-4 w-4 text-gray-500" />
+    </div>
+  );
+};
+
+export const SearchIcon: React.FC<IconProps> = ({
   width = "800px",
   height = "800px",
   className = "",
 }) => {
   return (
     <svg
+      className={className}
+      width={width}
+      height={height}
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 20 20"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+      />
+    </svg>
+  );
+};
+
+export const SearchIconInput: React.FC<IconProps> = ({ className = "" }) => {
+  return (
+    <div
+      className={classNames(
+        className,
+        "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+      )}
+    >
+      <SearchIcon height="" width="" className="h-4 w-4 text-gray-500" />
+    </div>
+  );
+};
+
+export const SearchIconAlt: React.FC<IconProps> = ({
+  width = "800px",
+  height = "800px",
+  className = "",
+}) => {
+  return (
+    <svg
+      className={className}
       width={width}
       height={height}
       viewBox="0 0 24 24"
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
     >
       <g fill="none" fillRule="evenodd" stroke="none" strokeWidth="1">
         <g transform="translate(-327.000000, -142.000000)">
@@ -232,9 +285,7 @@ export const SearchIcon: React.FC<SearchIconProps> = ({
   );
 };
 
-export const SearchIconInput: React.FC<SearchIconInputProps> = ({
-  className = "",
-}) => {
+export const SearchIconAltInput: React.FC<IconProps> = ({ className = "" }) => {
   return (
     <div
       className={classNames(
@@ -242,21 +293,279 @@ export const SearchIconInput: React.FC<SearchIconInputProps> = ({
         "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
       )}
     >
-      <svg
-        className="h-4 w-4 text-gray-500"
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 20 20"
-      >
-        <path
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-        />
-      </svg>
+      <SearchIconAlt height="" width="" className="h-4 w-4 text-gray-500" />
+    </div>
+  );
+};
+
+export const MailIcon: React.FC<IconProps> = ({
+  width = "800px",
+  height = "800px",
+  className = "",
+}) => {
+  return (
+    <svg
+      width={width}
+      height={height}
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M4 18L9 12M20 18L15 12M3 8L10.225 12.8166C10.8665 13.2443 11.1872 13.4582 11.5339 13.5412C11.8403 13.6147 12.1597 13.6147 12.4661 13.5412C12.8128 13.4582 13.1335 13.2443 13.775 12.8166L21 8M6.2 19H17.8C18.9201 19 19.4802 19 19.908 18.782C20.2843 18.5903 20.5903 18.2843 20.782 17.908C21 17.4802 21 16.9201 21 15.8V8.2C21 7.0799 21 6.51984 20.782 6.09202C20.5903 5.71569 20.2843 5.40973 19.908 5.21799C19.4802 5 18.9201 5 17.8 5H6.2C5.0799 5 4.51984 5 4.09202 5.21799C3.71569 5.40973 3.40973 5.71569 3.21799 6.09202C3 6.51984 3 7.07989 3 8.2V15.8C3 16.9201 3 17.4802 3.21799 17.908C3.40973 18.2843 3.71569 18.5903 4.09202 18.782C4.51984 19 5.07989 19 6.2 19Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const MailIconInput: React.FC<IconProps> = ({ className = "" }) => {
+  return (
+    <div
+      className={classNames(
+        className,
+        "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+      )}
+    >
+      <MailIcon height="" width="" className="h-4.5 w-4.5 text-gray-500" />
+    </div>
+  );
+};
+
+export const MailCheckIcon: React.FC<IconProps> = ({
+  width = "800px",
+  height = "800px",
+  className = "",
+}) => {
+  return (
+    <svg
+      className={className}
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M15 18L17 20L21 16M11 19H6.2C5.0799 19 4.51984 19 4.09202 18.782C3.71569 18.5903 3.40973 18.2843 3.21799 17.908C3 17.4802 3 16.9201 3 15.8V8.2C3 7.0799 3 6.51984 3.21799 6.09202C3.40973 5.71569 3.71569 5.40973 4.09202 5.21799C4.51984 5 5.0799 5 6.2 5H17.8C18.9201 5 19.4802 5 19.908 5.21799C20.2843 5.40973 20.5903 5.71569 20.782 6.09202C21 6.51984 21 7.0799 21 8.2V12M20.6067 8.26229L15.5499 11.6335C14.2669 12.4888 13.6254 12.9165 12.932 13.0827C12.3192 13.2295 11.6804 13.2295 11.0677 13.0827C10.3743 12.9165 9.73279 12.4888 8.44975 11.6335L3.14746 8.09863"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const MailCheckIconInput: React.FC<IconProps> = ({ className = "" }) => {
+  return (
+    <div
+      className={classNames(
+        className,
+        "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+      )}
+    >
+      <MailCheckIcon height="" width="" className="h-4.5 w-4.5 text-gray-500" />
+    </div>
+  );
+};
+
+export const KeyIcon: React.FC<IconProps> = ({
+  width = "800px",
+  height = "800px",
+  className = "",
+}) => {
+  return (
+    <svg
+      className={className}
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M12.3212 10.6852L4 19L6 21M7 16L9 18M20 7.5C20 9.98528 17.9853 12 15.5 12C13.0147 12 11 9.98528 11 7.5C11 5.01472 13.0147 3 15.5 3C17.9853 3 20 5.01472 20 7.5Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const KeyIconInput: React.FC<IconProps> = ({ className = "" }) => {
+  return (
+    <div
+      className={classNames(
+        className,
+        "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+      )}
+    >
+      <KeyIcon height="" width="" className="h-4.5 w-4.5 text-gray-500" />
+    </div>
+  );
+};
+
+export const IdCardIcon: React.FC<IconProps> = ({
+  width = "800px",
+  height = "800px",
+  className = "",
+}) => {
+  return (
+    <svg
+      className={className}
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18 12H15M21 8H3M18 16H15M13 19C12.6218 17.2883 10.9747 16 9 16C7.03262 16 5.39034 17.2788 5.00424 18.9811M9 12H9.01M5.00424 18.9811C5.31776 19 5.70396 19 6.2 19H17.8C18.9201 19 19.4802 19 19.908 18.782C20.2843 18.5903 20.5903 18.2843 20.782 17.908C21 17.4802 21 16.9201 21 15.8V8.2C21 7.0799 21 6.51984 20.782 6.09202C20.5903 5.71569 20.2843 5.40973 19.908 5.21799C19.4802 5 18.9201 5 17.8 5H6.2C5.0799 5 4.51984 5 4.09202 5.21799C3.71569 5.40973 3.40973 5.71569 3.21799 6.09202C3 6.51984 3 7.07989 3 8.2V15.8C3 16.9201 3 17.4802 3.21799 17.908C3.40973 18.2843 3.71569 18.5903 4.09202 18.782C4.33038 18.9035 4.60979 18.9572 5.00424 18.9811ZM10 12C10 12.5523 9.55228 13 9 13C8.44772 13 8 12.5523 8 12C8 11.4477 8.44772 11 9 11C9.55228 11 10 11.4477 10 12Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const IdCardIconInput: React.FC<IconProps> = ({ className = "" }) => {
+  return (
+    <div
+      className={classNames(
+        className,
+        "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+      )}
+    >
+      <IdCardIcon height="" width="" className="h-4.5 w-4.5 text-gray-500" />
+    </div>
+  );
+};
+
+export const UserIcon: React.FC<IconProps> = ({
+  width = "800px",
+  height = "800px",
+  className = "",
+}) => {
+  return (
+    <svg
+      className={className}
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        stroke-Linecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const UserIconInput: React.FC<IconProps> = ({ className = "" }) => {
+  return (
+    <div
+      className={classNames(
+        className,
+        "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+      )}
+    >
+      <UserIcon height="" width="" className="h-4.5 w-4.5 text-gray-500" />
+    </div>
+  );
+};
+
+export const HashIcon: React.FC<IconProps> = ({
+  width = "800px",
+  height = "800px",
+  className = "",
+}) => {
+  return (
+    <svg
+      className={className}
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M10 4L7 20M17 4L14 20M5 8H20M4 16H19"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};
+
+export const HashIconInput: React.FC<IconProps> = ({ className = "" }) => {
+  return (
+    <div
+      className={classNames(
+        className,
+        "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+      )}
+    >
+      <HashIcon height="" width="" className="h-4.5 w-4.5 text-gray-500" />
+    </div>
+  );
+};
+
+export const UserPlusIcon: React.FC<IconProps> = ({
+  width = "800px",
+  height = "800px",
+  className = "",
+}) => {
+  return (
+    <svg
+      className={className}
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M20 18L17 18M17 18L14 18M17 18V15M17 18V21M11 21H4C4 17.134 7.13401 14 11 14C11.695 14 12.3663 14.1013 13 14.2899M15 7C15 9.20914 13.2091 11 11 11C8.79086 11 7 9.20914 7 7C7 4.79086 8.79086 3 11 3C13.2091 3 15 4.79086 15 7Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const UserPlusIconInput: React.FC<IconProps> = ({ className = "" }) => {
+  return (
+    <div
+      className={classNames(
+        className,
+        "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+      )}
+    >
+      <UserPlusIcon height="" width="" className="h-4.5 w-4.5 text-gray-500" />
     </div>
   );
 };
