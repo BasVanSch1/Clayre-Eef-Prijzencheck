@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink, redirect, useNavigate } from "react-router";
 import type { User } from "./Types";
 import {
   SearchIconInput,
@@ -7,6 +7,7 @@ import {
   UserPlusIconInput,
   UserXIcon,
 } from "./Icons";
+import ConfirmationModal from "./Modals/ConfirmationModal";
 
 interface UsersTableProps {
   data?: User[] | undefined | null;
@@ -60,8 +61,31 @@ const UsersTable = ({ data, addUser, removeUser }: UsersTableProps) => {
     navigate(`/maintenance/users/${userId}`);
   }
 
+  const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
+
+  const handleConfirmDelete = () => {
+    console.log("Confirmed!");
+    if (!deleteUserId) {
+      setConfirmationModalOpen(false);
+      return;
+    }
+
+    navigate(`/maintenance/users/${deleteUserId}/delete`);
+  };
+
   return (
     <>
+      {deleteUserId && (
+        <ConfirmationModal
+          isOpen={isConfirmationModalOpen}
+          onClose={() => setConfirmationModalOpen(false)}
+          onConfirm={handleConfirmDelete}
+          title="Delete User"
+          message="Are you sure you want to delete this user?"
+        />
+      )}
+
       <div className="relative row-start-1 col-start-1">
         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
           <SearchIconInput />
@@ -129,13 +153,14 @@ const UsersTable = ({ data, addUser, removeUser }: UsersTableProps) => {
               >
                 {removeUser && (
                   <td className="w-0">
-                    <NavLink
-                      key="delete-${user.id}"
-                      to={`/maintenance/users/${user.id}/delete`}
-                      className="text-red-600 hover:text-red-700"
+                    <div
+                      onClick={() => {
+                        setDeleteUserId(user.id);
+                        setConfirmationModalOpen(true);
+                      }}
                     >
-                      <UserXIcon className="h-4.5 w-4.5" />
-                    </NavLink>
+                      <UserXIcon className="h-4.5 w-4.5 text-red-600 hover:text-red-700" />
+                    </div>
                   </td>
                 )}
                 <td className={tdClassNames}>{user.name}</td>

@@ -1,10 +1,11 @@
 import { requirePermission } from "~/services/auth.server";
 import type { Route } from "./+types/users";
 import { getUsers } from "~/services/userService.server";
-import { Await, useLoaderData } from "react-router";
+import { Await, redirect, useLoaderData } from "react-router";
 import type { User } from "~/components/Types";
 import UsersTable from "~/components/UsersTable";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
+import ConfirmationModal from "~/components/Modals/ConfirmationModal";
 
 export const handle = {
   title: "Maintenance > Users",
@@ -49,6 +50,7 @@ export default function Users() {
   const users = useLoaderData().users as User[];
   const canAddUser = useLoaderData().canAddUser as boolean;
   const canRemoveUser = useLoaderData().canRemoveUser as boolean;
+
   return (
     <>
       <div className="grid grid-cols-1 grid-rows-[auto_auto_auto]">
