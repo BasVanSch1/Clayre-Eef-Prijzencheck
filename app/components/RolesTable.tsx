@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import type { RolePermission, UserRole } from "./Types";
-import { SearchIconInput } from "./Icons";
+import { SearchIconInput, ShieldPlusIcon, TrashIcon } from "./Icons";
+import ConfirmationModal from "./Modals/ConfirmationModal";
 
 interface RolesTableProps {
   data?: UserRole[] | undefined | null;
+  addRole?: boolean;
+  removeRole?: boolean;
 }
 
-const RolesTable = ({ data }: RolesTableProps) => {
+const RolesTable = ({ data, addRole, removeRole }: RolesTableProps) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -30,16 +33,54 @@ const RolesTable = ({ data }: RolesTableProps) => {
     );
   });
 
-  function navigateToRole(roleId: string | undefined) {
+  function navigateToRole(
+    event: React.MouseEvent<HTMLElement>,
+    roleId: string | undefined
+  ) {
     if (!roleId) {
+      return;
+    }
+
+    // Prevent navigation if the click is on a link/icon
+    const target = event.target as HTMLElement;
+    if (
+      target.tagName === "a" ||
+      target.tagName === "svg" ||
+      target.tagName === "path"
+    ) {
       return;
     }
 
     navigate(`/maintenance/roles/${roleId}`);
   }
 
+  const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [deleteRoleId, setDeleteRoleId] = useState<string | null | undefined>(
+    null
+  );
+
+  const handleConfirmDelete = () => {
+    console.log("Confirmed!");
+    if (!deleteRoleId) {
+      setConfirmationModalOpen(false);
+      return;
+    }
+
+    navigate(`/maintenance/roles/${deleteRoleId}/delete`);
+  };
+
   return (
     <>
+      {deleteRoleId && (
+        <ConfirmationModal
+          isOpen={isConfirmationModalOpen}
+          onClose={() => setConfirmationModalOpen(false)}
+          onConfirm={handleConfirmDelete}
+          title="Delete Role"
+          message="Are you sure you want to delete this role?"
+        />
+      )}
+
       <div className="relative row-start-1 col-start-1">
         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
           <SearchIconInput />
@@ -55,9 +96,24 @@ const RolesTable = ({ data }: RolesTableProps) => {
         />
       </div>
 
-      <table className="row-start-2 col-start-1">
+      {addRole && (
+        <div className="row-start-2 col-start-1 flex">
+          <NavLink
+            to="/maintenance/roles/new"
+            className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-1 text-sm md:text-base text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
+          >
+            <span className="flex items-center gap-1">
+              <ShieldPlusIcon className="h-4.5 w-4.5 me-1" />
+              New Role
+            </span>
+          </NavLink>
+        </div>
+      )}
+
+      <table className="row-start-3 col-start-1">
         <thead>
           <tr>
+            {removeRole && <th scope="col" className={thClassNames}></th>}
             <th scope="col" className={thClassNames}>
               Name
             </th>
@@ -85,8 +141,20 @@ const RolesTable = ({ data }: RolesTableProps) => {
               <tr
                 key={role.id}
                 className="hover:bg-gray-200 dark:hover:bg-neutral-800 cursor-pointer"
-                onClick={() => navigateToRole(role.id)}
+                onClick={(e) => navigateToRole(e, role.id)}
               >
+                {removeRole && (
+                  <td className="w-0">
+                    <div
+                      onClick={() => {
+                        setDeleteRoleId(role.id);
+                        setConfirmationModalOpen(true);
+                      }}
+                    >
+                      <TrashIcon className="h-4.5 w-4.5 text-red-600 hover:text-red-700" />
+                    </div>
+                  </td>
+                )}
                 <td className={tdClassNames}>{role.name}</td>
                 <td className={tdClassNames}>{role.description}</td>
                 <td

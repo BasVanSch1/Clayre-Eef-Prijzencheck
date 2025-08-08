@@ -24,8 +24,14 @@ export async function loader({ request }: Route.LoaderArgs) {
   );
 
   const roles = await getRoles();
+  const canAddRole = user.permissions?.some(
+    (perm) => perm.name === "prijzencheck.pages.maintenance.roles.create"
+  );
+  const canRemoveRole = user.permissions?.some(
+    (perm) => perm.name === "prijzencheck.pages.maintenance.roles.delete"
+  );
 
-  return { roles };
+  return { roles, canAddRole, canRemoveRole };
 }
 
 export function HydrateFallback() {
@@ -40,13 +46,21 @@ export function HydrateFallback() {
 
 export default function Roles() {
   const roles = useLoaderData().roles as UserRole[];
+  const canAddRole = useLoaderData().canAddRole as boolean;
+  const canRemoveRole = useLoaderData().canRemoveRole as boolean;
   return (
     <>
       <>
         <div className="grid grid-cols-1 grid-rows-[auto_auto_auto]">
           <Suspense fallback={<HydrateFallback />}>
             <Await resolve={roles}>
-              {(roles) => <RolesTable data={roles} />}
+              {(roles) => (
+                <RolesTable
+                  data={roles}
+                  addRole={canAddRole}
+                  removeRole={canRemoveRole}
+                />
+              )}
             </Await>
           </Suspense>
         </div>
