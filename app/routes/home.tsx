@@ -25,7 +25,7 @@ export default function Home() {
           vult een <b>productcode</b> in of je zoekt het product in de{" "}
           <NavLink
             to="products"
-            className="underline text-blue-600 visited:text-purple-600 hover:text-blue-800"
+            className="underline text-blue-600 hover:text-blue-800"
           >
             productlijst
           </NavLink>

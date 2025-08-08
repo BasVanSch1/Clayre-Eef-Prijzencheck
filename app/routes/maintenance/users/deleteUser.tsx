@@ -80,7 +80,7 @@ export default function DeleteUser() {
               <NavLink
                 key="usersRedirect"
                 to="/maintenance/users"
-                className="underline text-blue-600 visited:text-purple-600 hover:text-blue-800"
+                className="underline text-blue-600 hover:text-blue-800"
               >
                 here
               </NavLink>
