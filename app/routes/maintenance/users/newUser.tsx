@@ -194,7 +194,7 @@ export default function NewUser() {
             </div>
           </div>
 
-          <div className={"flex md:gap-2 flex-col md:flex-row"}>
+          <div className="flex md:gap-2 flex-col md:flex-row">
             <div>
               <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                 Username
@@ -369,11 +369,11 @@ export default function NewUser() {
           </div>
 
           <div className="flex md:gap-2 flex-col md:flex-row">
-            <div className="w-[25vw] md:w-[20vw]">
+            <div className="md:w-[20vw]">
               <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                 Roles
               </label>
-              <div className="flex flex-col md:flex-row flex-wrap gap-1">
+              <div className="flex flex-row flex-wrap gap-1">
                 {roles && roles.length > 0 ? (
                   roles.map((role) => (
                     <p

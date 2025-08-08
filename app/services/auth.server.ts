@@ -55,6 +55,8 @@ export async function requirePermission(
     throw redirect(redirectTo || "/");
   }
 
+  user.permissions = permissions;
+
   return user;
 }
 

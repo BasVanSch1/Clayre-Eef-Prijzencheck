@@ -26,9 +26,9 @@ export type UserRole = {
 };
 
 export type RolePermission = {
-  id: string;
+  id?: string;
   name: string;
-  description: string;
+  description?: string;
 };
 
 export type Statistics = {

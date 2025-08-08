@@ -14,6 +14,9 @@ export default [
   route("maintenance", "routes/layouts/maintenance.tsx", [
     index("routes/maintenance/statistics.tsx"),
     route("roles", "routes/maintenance/roles.tsx"),
+    route("roles/:id", "routes/maintenance/roles/roleDetails.tsx"),
+    route("roles/:id/delete", "routes/maintenance/roles/deleteRole.tsx"),
+    route("roles/new", "routes/maintenance/roles/newRole.tsx"),
     route("users", "routes/maintenance/users.tsx"),
     route("users/:id", "routes/maintenance/users/userDetails.tsx"),
     route("users/:id/delete", "routes/maintenance/users/deleteUser.tsx"),

@@ -24,7 +24,7 @@ interface IconProps {
 //         "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
 //       )}
 //     >
-//       <Icon height="" width="" className="h-4 w-4 text-gray-500" />
+//       <Icon height="" width="" className="h-4.5 w-4.5 text-gray-500" />
 //     </div>
 //   );
 // };
@@ -686,6 +686,44 @@ export const ShieldPlusIconInput: React.FC<IconProps> = ({
         width=""
         className="h-4.5 w-4.5 text-gray-500"
       />
+    </div>
+  );
+};
+
+export const TextIcon: React.FC<IconProps> = ({
+  width = "800px",
+  height = "800px",
+  className = "",
+}) => {
+  return (
+    <svg
+      className={className}
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M12 3V21M9 21H15M19 6V3H5V6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const TextIconInput: React.FC<IconProps> = ({ className = "" }) => {
+  return (
+    <div
+      className={classNames(
+        className,
+        "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+      )}
+    >
+      <TextIcon height="" width="" className="h-4.5 w-4.5 text-gray-500" />
     </div>
   );
 };
