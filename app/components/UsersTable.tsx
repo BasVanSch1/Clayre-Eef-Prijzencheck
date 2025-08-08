@@ -1,12 +1,7 @@
 import { useState } from "react";
-import { NavLink, redirect, useNavigate } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import type { User } from "./Types";
-import {
-  SearchIconInput,
-  UserPlusIcon,
-  UserPlusIconInput,
-  UserXIcon,
-} from "./Icons";
+import { SearchIconInput, UserPlusIcon, UserXIcon } from "./Icons";
 import ConfirmationModal from "./Modals/ConfirmationModal";
 
 interface UsersTableProps {
@@ -65,7 +60,6 @@ const UsersTable = ({ data, addUser, removeUser }: UsersTableProps) => {
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
 
   const handleConfirmDelete = () => {
-    console.log("Confirmed!");
     if (!deleteUserId) {
       setConfirmationModalOpen(false);
       return;
