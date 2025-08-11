@@ -52,7 +52,7 @@ export const keys = {
 }
 
 export function formatDate(date: Date | null | undefined): string {
-    if (!date) return '';
+    if (!date) return 'unknown';
     return date.toLocaleString('nl-NL', {
         year: 'numeric',
         month: '2-digit',

@@ -60,8 +60,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
   const roles = await getRoles();
   const lastLoginDate = formatDate(user.lastLoginDate);
+  const lastLookupDate = formatDate(stats.lastLookupDate);
 
-  return { user, stats, roles, lastLoginDate };
+  return { user, stats, roles, lastLoginDate, lastLookupDate };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -142,6 +143,7 @@ export default function UserDetails() {
   const stats: Statistics = loaderData.stats;
   const existingRoles: UserRole[] = loaderData.roles;
   const lastLoginDate: string = loaderData.lastLoginDate;
+  const lastLookupDate: string = loaderData.lastLookupDate;
   const [file, setFile] = useState<string | null>();
   const [roles, setRoles] = useState<string[]>([]);
 
@@ -706,6 +708,21 @@ export default function UserDetails() {
                     type="text"
                     name="lastLoginDate"
                     defaultValue={lastLoginDate}
+                    className="ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    readOnly
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
+                  Last lookup
+                </label>
+                <div className="relative">
+                  <ClockIconInput />
+                  <input
+                    type="text"
+                    name="lastLoginDate"
+                    defaultValue={lastLookupDate}
                     className="ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
                     readOnly
                   />

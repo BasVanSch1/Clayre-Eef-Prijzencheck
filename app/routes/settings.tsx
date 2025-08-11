@@ -63,6 +63,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
     const stats = await getStatistics(username);
     const lastLoginDate = formatDate(user.lastLoginDate);
+    const lastLookupDate = formatDate(stats.lastLookupDate);
 
     user.avatar = await fileStorage.get(`${user.id}-avatar`);
     user.avatarVersion = Date.now(); // Use current timestamp to force reload avatar
@@ -74,12 +75,15 @@ export async function loader({ request }: Route.LoaderArgs) {
     session.set(keys.session.user.roles, user.roles);
     session.set(keys.session.user.permissions, user.permissions);
 
-    return new Response(JSON.stringify({ user, stats, lastLoginDate }), {
-      headers: {
-        "Content-Type": "application/json",
-        "Set-Cookie": await commitSession(session),
-      },
-    });
+    return new Response(
+      JSON.stringify({ user, stats, lastLoginDate, lastLookupDate }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Set-Cookie": await commitSession(session),
+        },
+      }
+    );
   } catch (error) {
     console.error("Failed to refresh user data:", error);
     return redirect("/");
@@ -147,6 +151,7 @@ export default function Settings() {
   const user: User = data?.user;
   const stats: Statistics = data?.stats;
   const lastLoginDate: string = data?.lastLoginDate;
+  const lastLookupDate: string = data?.lastLookupDate;
   const [file, setFile] = useState<string | null>();
 
   const actionData = useActionData<{
@@ -684,6 +689,21 @@ export default function Settings() {
                     type="text"
                     name="lastLoginDate"
                     defaultValue={lastLoginDate}
+                    className="ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    readOnly
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
+                  Last lookup
+                </label>
+                <div className="relative">
+                  <ClockIconInput />
+                  <input
+                    type="text"
+                    name="lastLoginDate"
+                    defaultValue={lastLookupDate}
                     className="ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
                     readOnly
                   />

@@ -17,6 +17,7 @@ export async function getStatistics(username?: string): Promise<Statistics> {
     totalLookups: -1,
     totalProducts: -1,
     totalUsers: -1,
+    lastLookupDate: null,
   };
 
   try {
@@ -39,6 +40,7 @@ export async function getStatistics(username?: string): Promise<Statistics> {
       totalLookups: data.totalLookups,
       totalProducts: data.totalProducts,
       totalUsers: data.totalUsers,
+      lastLookupDate: new Date(data.lastLookupDate),
     };
 
     return stats;
