@@ -80,7 +80,7 @@ export async function action({ request }: Route.ActionArgs) {
       redirectUrl: redirectTo,
       user: {
         id: userData.userId,
-        username: userData.userName,
+        username: userData.username,
         name: userData.displayName,
         email: userData.email,
         roles: roles,

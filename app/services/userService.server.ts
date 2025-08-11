@@ -487,7 +487,7 @@ export async function getUser(userId: string): Promise<User | null> {
 
     const user: User = {
       id: data.userId,
-      username: data.userName,
+      username: data.username,
       name: data.displayName,
       email: data.email,
       roles: roles,
@@ -520,7 +520,7 @@ export async function getUsers(): Promise<User[]> {
     const users: User[] = data
       ? data.map((user: any) => ({
           id: user.userId,
-          username: user.userName,
+          username: user.username,
           name: user.displayName,
           email: user.email,
           roles:
