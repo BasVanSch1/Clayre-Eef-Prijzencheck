@@ -13,13 +13,13 @@ import type { RolePermission, UserRole } from "~/components/Types";
 import { getPermissions } from "~/services/userService.server";
 
 export const handle = {
-  title: "Log in",
+  title: "Login",
 };
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Prijzencheck - Log in" },
-    { name: "description", content: "Prijzencheck Log in" },
+    { title: "Prijzencheck - Login" },
+    { name: "description", content: "Prijzencheck Login" },
   ];
 }
 
@@ -106,14 +106,14 @@ export default function Login() {
         <h1 className="mt-2 md:my-5 text-4xl font-semibold">Login</h1>
       </div>
 
-      <div className="mt-5 sm:mx-aut sm:w-80 sm:max-w-sm">
-        <Form method="post" className="space-y-6">
+      <div className="mt-5 sm:mx-auto sm:w-80 sm:max-w-sm">
+        <Form method="post" className="space-y-4">
           <div>
             <label
               htmlFor="username"
-              className="Block text-sm/6 font-medium text-gray-900 dark:text-neutral-200"
+              className="block text-sm/6 font-medium text-gray-900 dark:text-neutral-200"
             >
-              Gebruikersnaam
+              Username
             </label>
             <div className="mt-2">
               <input
@@ -140,7 +140,7 @@ export default function Login() {
                 htmlFor="password"
                 className="block text-sm/6 font-medium text-gray-900 dark:text-neutral-200"
               >
-                Wachtwoord
+                Password
               </label>
             </div>
             <div className="mt-2">
@@ -178,10 +178,10 @@ export default function Login() {
           <div>
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="mt-2 w-full cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Logging in..." : "Log in"}
+              {isSubmitting ? "Logging in..." : "Login"}
             </button>
           </div>
 
