@@ -22,7 +22,7 @@ const ProductCard = ({ product }: ProductCard) => {
           <img className="rounded-md" src={product.imageUrl} />
           <button
             onClick={handleDownloadProductPhoto}
-            className="absolute bottom-0 right-0 cursor-pointer rounded-md bg-[#007bffbd] hover:bg-[#0066ff] p-1 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
+            className="absolute bottom-0 right-0 cursor-pointer rounded-full bg-[#007bffbd] hover:bg-[#0066ff] p-1 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
           >
             <DownloadIcon className="size-5" />
           </button>
