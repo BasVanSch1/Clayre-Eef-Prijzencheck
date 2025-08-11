@@ -133,7 +133,7 @@ const NavBar = () => {
 
                     {user?.avatar ? (
                       <img
-                        src={`/data/${user.id}-avatar?=${
+                        src={`/data/${user.id}-avatar?v=${
                           user.avatarVersion ?? 0
                         }`}
                         className="size-8 rounded-full"
