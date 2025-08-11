@@ -168,7 +168,7 @@ export default function Login() {
           <div>
             <input type="checkbox" name="remember" id="remember" />
             <label
-              htmlFor="username"
+              htmlFor="remember"
               className="Block text-sm/6 font-medium text-gray-900 dark:text-neutral-400 ml-2"
             >
               Remember me
