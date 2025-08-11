@@ -24,6 +24,7 @@ import {
 import { classNames } from "~/root";
 import { fileStorage } from "~/services/filestorage.server";
 import { getRoles } from "~/services/rolesService.server";
+import { formatDate } from "~/globals";
 
 export const handle = {
   title: "Maintenance > Users > User Details",
@@ -57,8 +58,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   user.avatarVersion = Date.now();
 
   const roles = await getRoles();
+  const lastLoginDate = formatDate(user.lastLoginDate);
 
-  return { user, stats, roles };
+  return { user, stats, roles, lastLoginDate };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -138,6 +140,7 @@ export default function UserDetails() {
   const user: User = loaderData.user;
   const stats: Statistics = loaderData.stats;
   const existingRoles: UserRole[] = loaderData.roles;
+  const lastLoginDate: string = loaderData.lastLoginDate;
   const [file, setFile] = useState<string | null>();
   const [roles, setRoles] = useState<string[]>([]);
 
@@ -385,7 +388,7 @@ export default function UserDetails() {
                   <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                     Roles
                   </label>
-                  <div className="flex flex-col md:flex-row flex-wrap gap-1">
+                  <div className="flex flex-row flex-wrap gap-1">
                     {roles && roles.length > 0 ? (
                       roles.map((role) => (
                         <p
@@ -626,7 +629,7 @@ export default function UserDetails() {
                 <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
                   Roles
                 </label>
-                <div className="flex gap-2">
+                <div className="flex flex-row flex-wrap gap-2">
                   {user.roles?.length ? (
                     user.roles.map((role) => (
                       <p
@@ -686,6 +689,23 @@ export default function UserDetails() {
                     name="userId"
                     defaultValue={stats.lookupsByCode}
                     className="ps-10 p-2 border border-gray-300 rounded-md w-full text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    readOnly
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col md:flex-row md:gap-2">
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
+                  Last login
+                </label>
+                <div className="relative">
+                  <HashIconInput />
+                  <input
+                    type="text"
+                    name="lastLoginDate"
+                    defaultValue={lastLoginDate}
+                    className="ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
                     readOnly
                   />
                 </div>

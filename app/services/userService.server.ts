@@ -492,6 +492,7 @@ export async function getUser(userId: string): Promise<User | null> {
       email: data.email,
       roles: roles,
       permissions: permissions,
+      lastLoginDate: new Date(data.lastLoginDate),
     };
 
     return user;
@@ -533,6 +534,7 @@ export async function getUsers(): Promise<User[]> {
                 };
               })) ||
             [],
+          lastLoginDate: new Date(user.lastLoginDate),
         }))
       : [];
 

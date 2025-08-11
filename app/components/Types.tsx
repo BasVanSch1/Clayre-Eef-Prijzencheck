@@ -8,6 +8,7 @@ export type User = {
   avatarVersion?: number; // Optional field to refresh avatar when updated
   roles?: UserRole[];
   permissions?: RolePermission[]; // Optional field so that I don't need to loop through roles to check permissions.
+  lastLoginDate?: Date | null;
 };
 
 export type Product = {
@@ -39,4 +40,5 @@ export type Statistics = {
   totalLookups: number;
   totalProducts: number;
   totalUsers: number;
+  lastLookupDate: Date | null;
 };

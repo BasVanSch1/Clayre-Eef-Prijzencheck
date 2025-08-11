@@ -85,6 +85,7 @@ export async function action({ request }: Route.ActionArgs) {
         email: userData.email,
         roles: roles,
         permissions: permissions,
+        lastLoginDate: new Date(userData.lastLoginDate),
       },
     });
   } catch (error) {

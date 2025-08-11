@@ -1,5 +1,3 @@
-import { get } from "http"
-
 export const endpoints = {
     user: {
         get: (process.env.API_URL ?? '') + (process.env.USER_ENDPOINT ?? ''),
@@ -51,4 +49,17 @@ export const keys = {
             permissions: "userPermissions",
         }
     }
+}
+
+export function formatDate(date: Date | null | undefined): string {
+    if (!date) return '';
+    return date.toLocaleString('nl-NL', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'Europe/Amsterdam',
+    });
 }

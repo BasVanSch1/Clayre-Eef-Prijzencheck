@@ -20,7 +20,7 @@ import {
 import type { Statistics, User } from "~/components/Types";
 import { classNames } from "~/root";
 import validator from "validator";
-import { keys } from "~/globals";
+import { formatDate, keys } from "~/globals";
 import { getUser } from "~/services/userService.server";
 import { getStatistics } from "~/services/statistics.server";
 import { getUserFromSession } from "~/services/session.server";
@@ -61,6 +61,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
 
     const stats = await getStatistics(username);
+    const lastLoginDate = formatDate(user.lastLoginDate);
 
     user.avatar = await fileStorage.get(`${user.id}-avatar`);
     user.avatarVersion = Date.now(); // Use current timestamp to force reload avatar
@@ -72,7 +73,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     session.set(keys.session.user.roles, user.roles);
     session.set(keys.session.user.permissions, user.permissions);
 
-    return new Response(JSON.stringify({ user, stats }), {
+    return new Response(JSON.stringify({ user, stats, lastLoginDate }), {
       headers: {
         "Content-Type": "application/json",
         "Set-Cookie": await commitSession(session),
@@ -144,6 +145,7 @@ export default function Settings() {
   const data = useLoaderData();
   const user: User = data?.user;
   const stats: Statistics = data?.stats;
+  const lastLoginDate: string = data?.lastLoginDate;
   const [file, setFile] = useState<string | null>();
 
   const actionData = useActionData<{
@@ -626,7 +628,7 @@ export default function Settings() {
             <div className="flex flex-col md:flex-row md:gap-2">
               <div className="flex-grow">
                 <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
-                  Total Lookups
+                  Total lookups
                 </label>
                 <div className="relative">
                   <SearchIconInput />
@@ -665,6 +667,23 @@ export default function Settings() {
                     name="userId"
                     defaultValue={stats.lookupsByCode}
                     className="ps-10 p-2 border border-gray-300 rounded-md w-full text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
+                    readOnly
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col md:flex-row md:gap-2">
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-neutral-400">
+                  Last login
+                </label>
+                <div className="relative">
+                  <HashIconInput />
+                  <input
+                    type="text"
+                    name="lastLoginDate"
+                    defaultValue={lastLoginDate}
+                    className="ps-10 p-2 border border-gray-300 rounded-md w-full md:w-[25vw] lg:w-[20vw] text-sm md:text-base transition-colors duration-200 text-gray-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-purple-500"
                     readOnly
                   />
                 </div>
