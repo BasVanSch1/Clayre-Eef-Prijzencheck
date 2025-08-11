@@ -8,6 +8,7 @@ import {
   useNavigation,
 } from "react-router";
 import {
+  ClockIconInput,
   DefaultProfileImage,
   HashIconInput,
   IdCardIconInput,
@@ -678,7 +679,7 @@ export default function Settings() {
                   Last login
                 </label>
                 <div className="relative">
-                  <HashIconInput />
+                  <ClockIconInput />
                   <input
                     type="text"
                     name="lastLoginDate"

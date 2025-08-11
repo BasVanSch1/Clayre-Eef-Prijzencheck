@@ -12,6 +12,7 @@ import type { Statistics, User, UserRole } from "~/components/Types";
 import { useEffect, useState } from "react";
 import validator from "validator";
 import {
+  ClockIconInput,
   DefaultProfileImage,
   HashIconInput,
   IdCardIconInput,
@@ -700,7 +701,7 @@ export default function UserDetails() {
                   Last login
                 </label>
                 <div className="relative">
-                  <HashIconInput />
+                  <ClockIconInput />
                   <input
                     type="text"
                     name="lastLoginDate"
