@@ -178,7 +178,7 @@ export default function Login() {
           <div>
             <button
               type="submit"
-              className="mt-2 w-full cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
+              className="mt-2 w-full cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-1.5 text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Logging in..." : "Login"}
