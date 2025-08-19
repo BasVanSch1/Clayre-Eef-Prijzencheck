@@ -23,6 +23,8 @@ export async function updateUserSettings(
   let newImage = formData.get("profileImage") as File | null;
   const roles = formData.get("_roles") as string | null;
   let rolesArray: UserRole[] = [];
+  const accountEnabled: boolean =
+    formData.get("enabled") === "on" ? true : false;
 
   if (newImage && newImage instanceof File && newImage.size > 0) {
     if (newImage.size > 5 * 1024 * 1024) {
@@ -97,6 +99,9 @@ export async function updateUserSettings(
       ? `{"op": "replace", "path": "/roles", "value": ${JSON.stringify(
           rolesArray
         )}},`
+      : "") +
+    (admin
+      ? `{"op": "replace", "path": "/enabled", "value": "${accountEnabled}"},`
       : "") +
     "]";
 
@@ -493,6 +498,7 @@ export async function getUser(userId: string): Promise<User | null> {
       roles: roles,
       permissions: permissions,
       lastLoginDate: new Date(data.lastLoginDate),
+      enabled: data.enabled,
     };
 
     return user;
@@ -535,6 +541,7 @@ export async function getUsers(): Promise<User[]> {
               })) ||
             [],
           lastLoginDate: new Date(user.lastLoginDate),
+          enabled: user.enabled,
         }))
       : [];
 
@@ -570,5 +577,43 @@ export async function deleteUser(
   } catch (error) {
     console.error("Error deleting user:", error);
     return { code: 500, message: `${error}` }; // Internal Server Error
+  }
+}
+
+export async function toggleEnabledUser(
+  userId: string
+): Promise<{ code: number; message?: string }> {
+  const user = await getUser(userId);
+
+  if (!user) {
+    return { code: 404, message: "User not found." };
+  }
+
+  const formattedBody =
+    "[" +
+    `{"op": "replace", "path": "/enabled", "value": ${!user.enabled}}` +
+    "]";
+
+  try {
+    const res = await fetch(
+      `${endpoints.user.update}`.replace("{id}", userId),
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json-patch+json",
+        },
+        body: formattedBody,
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Failed to toggle user enabled status:", await res.json());
+      return { code: res.status, message: res.statusText };
+    }
+
+    return { code: 204, message: "User enabled status toggled successfully." };
+  } catch (error) {
+    console.error("Error toggling user enabled status:", error);
+    return { code: 500, message: `${error}` };
   }
 }

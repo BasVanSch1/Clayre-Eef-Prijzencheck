@@ -57,7 +57,8 @@ export async function action({ request }: Route.ActionArgs) {
     });
 
     if (!res.ok) {
-      return { errorCode: res.status, errorText: res.statusText };
+      const data = await res.json();
+      return { errorCode: res.status, errorText: data.message };
     }
 
     const userData = await res.json();
@@ -86,6 +87,7 @@ export async function action({ request }: Route.ActionArgs) {
         roles: roles,
         permissions: permissions,
         lastLoginDate: new Date(userData.lastLoginDate),
+        enabled: userData.enabled,
       },
     });
   } catch (error) {
@@ -118,7 +120,7 @@ export default function Login() {
             <div className="mt-2">
               <input
                 className={classNames(
-                  actionData?.errorCode === 404
+                  actionData?.errorCode === 404 || actionData?.errorCode === 401
                     ? "border-red-600"
                     : "border-gray-300 dark:border-neutral-600",
                   "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border placeholder:text-neutral-300 sm:text-sm/6 dark:bg-neutral-800 dark:text-neutral-300 dark:focus:outline-none dark:focus:ring-0 dark:focus:border-indigo-600"
@@ -160,7 +162,11 @@ export default function Login() {
             </div>
             {actionData?.errorCode === 401 ? (
               <p className="text-red-500 text-xs">
-                Username or password incorrect
+                {actionData?.errorText ? (
+                  actionData.errorText
+                ) : (
+                  <>Username or password incorrect</>
+                )}
               </p>
             ) : null}
           </div>

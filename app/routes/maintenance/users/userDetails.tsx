@@ -25,7 +25,8 @@ import {
 import { classNames } from "~/root";
 import { fileStorage } from "~/services/filestorage.server";
 import { getRoles } from "~/services/rolesService.server";
-import { formatDate } from "~/globals";
+import { formatDate, keys } from "~/globals";
+import { getUserSession } from "~/services/session.server";
 
 export const handle = {
   title: "Maintenance > Users > User Details",
@@ -67,6 +68,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
+  const session = await getUserSession(request);
   const actionType = formData.get("_action");
   const image = formData.get("profileImage") as File | null;
   const userId = new URL(request.url).pathname.split("/").pop();
@@ -90,11 +92,23 @@ export async function action({ request }: Route.ActionArgs) {
       (user.email === formData.get("newEmail") ||
         formData.get("newEmail") === "") &&
       (image === null || image.size === 0) &&
-      formData.get("_roles") === user.roles?.map((r) => r.name).join(",")
+      formData.get("_roles") === user.roles?.map((r) => r.name).join(",") &&
+      formData.get("enabled") === (user.enabled ? "on" : null)
     ) {
       return {
         code: 400,
         message: "No changes detected.",
+        action: "updateUserSettings",
+      };
+    }
+
+    if (
+      formData.get("enabled") === null &&
+      userId === session.get(keys.session.user.id)
+    ) {
+      return {
+        code: 400,
+        message: "You cannot disable your own account.",
         action: "updateUserSettings",
       };
     }
@@ -164,6 +178,10 @@ export default function UserDetails() {
       fields?: string[];
     }[]
   >([]);
+
+  const [enabledStatus, setEnabledStatus] = useState(
+    user.enabled ? "enabled" : "disabled"
+  );
 
   function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
     const uploadedFile = event.target.files?.[0];
@@ -464,26 +482,51 @@ export default function UserDetails() {
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row">
+              <div className="flex md:gap-2 flex-col md:flex-row md:mt-2">
                 <button
                   type="submit"
                   disabled={
                     isSubmitting &&
                     navigation.formAction?.includes("updateUser")
                   }
-                  className="mt-2 cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-sm md:text-base text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
+                  className="mt-auto mb-auto cursor-pointer rounded-md bg-[#007bff] hover:bg-[#0066ff] p-2 text-sm md:text-base text-white shadow-md transition-colors duration-200 dark:bg-purple-700 dark:hover:bg-purple-600 dark:focus:outline-none dark:focus:ring-0 dark:focus:bg-purple-600 dark:text-neutral-300"
                 >
                   {isSubmitting && navigation.formAction?.includes("updateUser")
                     ? "Saving..."
                     : "Save changes"}
                 </button>
-
+                <label className="inline-flex items-center me-5 cursor-pointer mt-auto mb-auto">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    name="enabled"
+                    defaultChecked={user.enabled}
+                    onChange={(e) => {
+                      setEnabledStatus(
+                        e.target.checked ? "enabled" : "disabled"
+                      );
+                    }}
+                  />
+                  <div className="relative w-11 h-6 bg-neutral-200 rounded-full peer peer-focus:ring-0 dark:bg-neutral-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-neutral-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
+                  <span
+                    className={classNames(
+                      enabledStatus === "enabled"
+                        ? "text-green-600"
+                        : "text-red-600",
+                      "ms-2 text-sm font-medium"
+                    )}
+                  >
+                    Account {enabledStatus}
+                  </span>
+                </label>
+              </div>
+              <div className="flex flex-col md:flex-row">
                 {feedback?.find(
                   (msg) => msg.action === "updateUserSettings" && !msg.fields
                 ) && (
                   <p
                     className={classNames(
-                      "ml-2 mt-2 text-xs md:text-sm self-center",
+                      "mt-2 text-xs md:text-sm self-center",
                       feedback?.find((msg) => msg.code === 204)
                         ? "text-green-600"
                         : "text-red-600"

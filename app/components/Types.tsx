@@ -9,6 +9,7 @@ export type User = {
   roles?: UserRole[];
   permissions?: RolePermission[]; // Optional field so that I don't need to loop through roles to check permissions.
   lastLoginDate?: Date | null;
+  enabled: boolean;
 };
 
 export type Product = {

@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import type { User } from "./Types";
-import { SearchIconInput, UserPlusIcon, UserXIcon } from "./Icons";
+import {
+  SearchIconInput,
+  UserBlockIcon,
+  UserCheckIcon,
+  UserPlusIcon,
+  UserXIcon,
+} from "./Icons";
 import ConfirmationModal from "./Modals/ConfirmationModal";
+import { classNames } from "~/root";
 
 interface UsersTableProps {
   data?: User[] | undefined | null;
@@ -58,6 +65,10 @@ const UsersTable = ({ data, addUser, removeUser }: UsersTableProps) => {
 
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
+  const [enableUser, setEnableUser] = useState<{
+    id: string;
+    enable: boolean;
+  } | null>(null);
 
   const handleConfirmDelete = () => {
     if (!deleteUserId) {
@@ -66,6 +77,15 @@ const UsersTable = ({ data, addUser, removeUser }: UsersTableProps) => {
     }
 
     navigate(`/maintenance/users/${deleteUserId}/delete`);
+  };
+
+  const handleToggleEnabled = () => {
+    if (!enableUser) {
+      setConfirmationModalOpen(false);
+      return;
+    }
+
+    navigate(`/maintenance/users/${enableUser.id}/toggleEnabled`);
   };
 
   return (
@@ -77,6 +97,18 @@ const UsersTable = ({ data, addUser, removeUser }: UsersTableProps) => {
           onConfirm={handleConfirmDelete}
           title="Delete User"
           message="Are you sure you want to delete this user?"
+        />
+      )}
+
+      {enableUser && (
+        <ConfirmationModal
+          isOpen={isConfirmationModalOpen}
+          onClose={() => setConfirmationModalOpen(false)}
+          onConfirm={handleToggleEnabled}
+          title={`${enableUser.enable ? "Enable" : "Disable"} User`}
+          message={`Are you sure you want to ${
+            enableUser.enable ? "enable" : "disable"
+          } this user?`}
         />
       )}
 
@@ -112,7 +144,7 @@ const UsersTable = ({ data, addUser, removeUser }: UsersTableProps) => {
       <table className="row-start-3 col-start-1">
         <thead>
           <tr>
-            {removeUser && <th scope="col" className={thClassNames}></th>}
+            <th scope="col" className={thClassNames}></th>
             <th scope="col" className={thClassNames}>
               Name
             </th>
@@ -145,8 +177,8 @@ const UsersTable = ({ data, addUser, removeUser }: UsersTableProps) => {
                 className="hover:bg-gray-200 dark:hover:bg-neutral-800 cursor-pointer"
                 onClick={(e) => navigateToUser(e, user.id)}
               >
-                {removeUser && (
-                  <td className="w-0">
+                <td className="w-0 flex">
+                  {removeUser && (
                     <div
                       onClick={() => {
                         setDeleteUserId(user.id);
@@ -155,13 +187,47 @@ const UsersTable = ({ data, addUser, removeUser }: UsersTableProps) => {
                     >
                       <UserXIcon className="h-4.5 w-4.5 text-red-600 hover:text-red-700" />
                     </div>
-                  </td>
-                )}
-                <td className={tdClassNames}>{user.name}</td>
-                <td className={tdClassNames}>{user.username}</td>
-                <td className={tdClassNames}>{user.email}</td>
+                  )}
+
+                  <div
+                    onClick={() => {
+                      setEnableUser({ id: user.id, enable: !user.enabled });
+                      setConfirmationModalOpen(true);
+                    }}
+                  >
+                    {user.enabled ? (
+                      <UserCheckIcon className="h-4.5 w-4.5 text-green-600 hover:text-green-700" />
+                    ) : (
+                      <UserBlockIcon className="h-4.5 w-4.5 text-red-600 hover:text-red-700" />
+                    )}
+                  </div>
+                </td>
                 <td
-                  className={`${tdClassNames} hidden md:flex md:flex-wrap gap-1`}
+                  className={classNames(
+                    user.enabled ? "" : "text-neutral-400",
+                    tdClassNames
+                  )}
+                >
+                  {user.name}
+                </td>
+                <td
+                  className={classNames(
+                    user.enabled ? "" : "text-neutral-400",
+                    tdClassNames
+                  )}
+                >
+                  {user.username}
+                </td>
+                <td
+                  className={classNames(
+                    user.enabled ? "" : "text-neutral-400",
+                    tdClassNames
+                  )}
+                >
+                  {user.email}
+                </td>
+                <td
+                  className={`${tdClassNames} hidden md:flex md:flex-wrap md:gap-1`}
                 >
                   {user.roles && user.roles.length > 0 ? (
                     user.roles.map((role) => {

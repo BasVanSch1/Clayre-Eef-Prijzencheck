@@ -1,11 +1,10 @@
 import { requirePermission } from "~/services/auth.server";
 import type { Route } from "./+types/users";
 import { getUsers } from "~/services/userService.server";
-import { Await, redirect, useLoaderData } from "react-router";
+import { Await, useLoaderData } from "react-router";
 import type { User } from "~/components/Types";
 import UsersTable from "~/components/UsersTable";
-import { Suspense, useState } from "react";
-import ConfirmationModal from "~/components/Modals/ConfirmationModal";
+import { Suspense } from "react";
 
 export const handle = {
   title: "Maintenance > Users",

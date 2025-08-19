@@ -20,6 +20,10 @@ export default [
     route("users", "routes/maintenance/users.tsx"),
     route("users/:id", "routes/maintenance/users/userDetails.tsx"),
     route("users/:id/delete", "routes/maintenance/users/deleteUser.tsx"),
+    route(
+      "users/:id/toggleEnabled",
+      "routes/maintenance/users/toggleEnabledUser.tsx"
+    ),
     route("users/new", "routes/maintenance/users/newUser.tsx"),
     route("products", "routes/maintenance/products.tsx"),
   ]),

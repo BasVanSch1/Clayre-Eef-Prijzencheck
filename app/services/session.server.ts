@@ -75,6 +75,7 @@ export async function getUserFromSession(
     email: session.get(keys.session.user.email),
     roles: session.get(keys.session.user.roles),
     permissions: session.get(keys.session.user.permissions),
+    enabled: session.get(keys.session.user.enabled),
   };
 
   return user;
@@ -107,6 +108,7 @@ export async function createUserSession({
   session.set(keys.session.user.email, user.email);
   session.set(keys.session.user.roles, user.roles);
   session.set(keys.session.user.permissions, user.permissions);
+  session.set(keys.session.user.enabled, user.enabled); // This is always true, because a disabled user cannot log in.
 
   console.log(
     `Created user session for userId: ${user.id}, username: ${

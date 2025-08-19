@@ -13,7 +13,7 @@ import type { RolePermission } from "~/components/Types";
 export async function requireAuth(request: Request, redirectTo?: string) {
   const user = await getUserFromSession(request);
 
-  if (!user) {
+  if (!user || !user.enabled) {
     const url = new URL(request.url);
     const searchParams = new URLSearchParams();
     searchParams.set("redirectTo", redirectTo || url.pathname);

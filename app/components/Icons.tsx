@@ -803,3 +803,79 @@ export const DownloadIconInput: React.FC<IconProps> = ({ className = "" }) => {
     </div>
   );
 };
+
+export const UserBlockIcon: React.FC<IconProps> = ({
+  width = "800px",
+  height = "800px",
+  className = "",
+}) => {
+  return (
+    <svg
+      className={className}
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M11 14C7.13401 14 4 17.134 4 21H11M14.8086 19.7053L19.127 16.3467M15 7C15 9.20914 13.2091 11 11 11C8.79086 11 7 9.20914 7 7C7 4.79086 8.79086 3 11 3C13.2091 3 15 4.79086 15 7ZM20 18C20 19.6569 18.6569 21 17 21C15.3431 21 14 19.6569 14 18C14 16.3431 15.3431 15 17 15C18.6569 15 20 16.3431 20 18Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const UserBlockIconInput: React.FC<IconProps> = ({ className = "" }) => {
+  return (
+    <div
+      className={classNames(
+        className,
+        "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+      )}
+    >
+      <UserBlockIcon height="" width="" className="h-4.5 w-4.5 text-gray-500" />
+    </div>
+  );
+};
+
+export const UserCheckIcon: React.FC<IconProps> = ({
+  width = "800px",
+  height = "800px",
+  className = "",
+}) => {
+  return (
+    <svg
+      className={className}
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M14.9999 15.2547C13.8661 14.4638 12.4872 14 10.9999 14C7.40399 14 4.44136 16.7114 4.04498 20.2013C4.01693 20.4483 4.0029 20.5718 4.05221 20.6911C4.09256 20.7886 4.1799 20.8864 4.2723 20.9375C4.38522 21 4.52346 21 4.79992 21H9.94465M13.9999 19.2857L15.7999 21L19.9999 17M14.9999 7C14.9999 9.20914 13.2091 11 10.9999 11C8.79078 11 6.99992 9.20914 6.99992 7C6.99992 4.79086 8.79078 3 10.9999 3C13.2091 3 14.9999 4.79086 14.9999 7Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const UserCheckIconInput: React.FC<IconProps> = ({ className = "" }) => {
+  return (
+    <div
+      className={classNames(
+        className,
+        "pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3"
+      )}
+    >
+      <UserCheckIcon height="" width="" className="h-4.5 w-4.5 text-gray-500" />
+    </div>
+  );
+};
